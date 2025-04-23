@@ -1,6 +1,7 @@
 package org.naukma.dev_ice.entity;
 
 import jakarta.persistence.*;
+import java.sql.Date;
 
 @Entity
 @Table(name = "product")
@@ -37,6 +38,24 @@ public class Product {
 
     @Column(name = "brand", nullable = false)
     private String brand;
+
+    @Column(name = "ram", nullable = false)
+    private Integer ram;
+
+    @Column(name = "color", nullable = false)
+    private String color;
+
+    @Column(name = "country", nullable = false)
+    private String country;
+
+    @Column(name = "prod_year", nullable = false)
+    private Date prodYear;
+
+    @Column(name = "diagonal", nullable = false)
+    private Double diagonal;
+
+    @Column(name = "internal_storage", nullable = false)
+    private Integer internalStorage;
 
     public Long getProductId() {
         return productId;
@@ -117,5 +136,52 @@ public class Product {
     public void setBrand(String brand) {
         this.brand = brand;
     }
-}
 
+    public Integer getRam() {
+        return ram;
+    }
+
+    public void setRam(Integer ram) {
+        this.ram = ram;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Date getProdYear() {
+        return prodYear;
+    }
+
+    public void setProdYear(Date prodYear) {
+        this.prodYear = prodYear;
+    }
+
+    public Double getDiagonal() {
+        return diagonal;
+    }
+
+    public void setDiagonal(Double diagonal) {
+        this.diagonal = diagonal;
+    }
+
+    public Integer getInternalStorage() {
+        return internalStorage;
+    }
+
+    public void setInternalStorage(Integer internalStorage) {
+        this.internalStorage = internalStorage;
+    }
+}
