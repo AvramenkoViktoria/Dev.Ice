@@ -17,14 +17,14 @@ public class Customer {
     @Column(name = "phone_num", nullable = false, unique = true)
     private String phoneNum;
 
+    @Column(name = "second_name", nullable = false)
+    private String secondName;
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
-
-    @Column(name = "start_date", nullable = false)
-    private java.sql.Timestamp startDate;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -45,6 +45,14 @@ public class Customer {
         this.phoneNum = phoneNum;
     }
 
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public void setSecondName(String secondName) {
+        this.secondName = secondName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -59,14 +67,6 @@ public class Customer {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Timestamp getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Timestamp startDate) {
-        this.startDate = startDate;
     }
 
     public String getPassword() {

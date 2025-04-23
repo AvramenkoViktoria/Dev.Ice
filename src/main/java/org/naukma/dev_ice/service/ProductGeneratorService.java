@@ -7,7 +7,6 @@ import org.naukma.dev_ice.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Random;
 
 @Service
@@ -21,9 +20,9 @@ public class ProductGeneratorService {
 
     private final Random random = new Random();
 
-    public void generateSalesAndProducts() {
-        generateRandomSales(10);
-        generateRandomProducts(1500);
+    public void generateSalesAndProducts(int salesNum, int productsNum) {
+        generateRandomSales(salesNum);
+        generateRandomProducts(productsNum);
     }
 
     public void generateRandomProducts(int number) {
