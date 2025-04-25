@@ -26,10 +26,10 @@ public class DataConfig {
     @Bean
     public CommandLineRunner dataInitializer() {
         return args -> {
-            managerGenerator.generateManagers(5);
-            productGenerator.generateSalesAndProducts(10, 500);
-            customerGenerator.generateCustomers(300);
-            orderGenerator.generateOrders(500);
+//            managerGenerator.generateManagers(5);
+//            productGenerator.generateSalesAndProducts(10, 500);
+//            customerGenerator.generateCustomers(300);
+//            orderGenerator.generateOrders(500);
         };
     }
 }
