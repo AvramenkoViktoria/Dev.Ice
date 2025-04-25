@@ -7,7 +7,6 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "\"order\"")
 public class Order {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
@@ -16,6 +15,10 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "manager_id")
     private Manager manager;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "email")
+    private Customer customer;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -59,6 +62,14 @@ public class Order {
 
     public String getStatus() {
         return status;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public void setStatus(String status) {
