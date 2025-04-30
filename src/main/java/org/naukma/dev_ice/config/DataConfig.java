@@ -1,9 +1,9 @@
 package org.naukma.dev_ice.config;
 
-import org.naukma.dev_ice.service.CustomerGeneratorService;
-import org.naukma.dev_ice.service.ProductGeneratorService;
-import org.naukma.dev_ice.service.ManagerGeneratorService;
-import org.naukma.dev_ice.service.OrderGeneratorService;
+import org.naukma.dev_ice.service.generator.CustomerGeneratorService;
+import org.naukma.dev_ice.service.generator.ProductGeneratorService;
+import org.naukma.dev_ice.service.generator.ManagerGeneratorService;
+import org.naukma.dev_ice.service.generator.OrderGeneratorService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

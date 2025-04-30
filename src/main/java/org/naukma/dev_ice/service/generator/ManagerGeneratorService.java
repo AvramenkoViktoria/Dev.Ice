@@ -1,9 +1,10 @@
-package org.naukma.dev_ice.service;
+package org.naukma.dev_ice.service.generator;
 
 import com.github.javafaker.Faker;
 import org.naukma.dev_ice.entity.Manager;
 import org.naukma.dev_ice.repository.ManagerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,6 +19,9 @@ public class ManagerGeneratorService {
 
     @Autowired
     private ManagerRepository managerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public void generateManagers(int count) {
         for (int i = 0; i < count; i++) {
@@ -37,9 +41,14 @@ public class ManagerGeneratorService {
             }
 
             manager.setPhoneNum(generatePhoneNumber());
+            manager.setEmail(faker.internet().emailAddress());
+            String rawPassword = faker.internet().password(8, 16);
+            manager.setPassword(passwordEncoder.encode(rawPassword));
+
             managerRepository.save(manager);
         }
     }
+
 
     private String generatePhoneNumber() {
         StringBuilder sb = new StringBuilder("+380");

@@ -1,4 +1,4 @@
-package org.naukma.dev_ice.service;
+package org.naukma.dev_ice.service.generator;
 
 import org.naukma.dev_ice.entity.*;
 import org.naukma.dev_ice.repository.*;

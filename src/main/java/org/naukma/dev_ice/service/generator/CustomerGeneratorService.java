@@ -1,9 +1,10 @@
-package org.naukma.dev_ice.service;
+package org.naukma.dev_ice.service.generator;
 
 import com.github.javafaker.Faker;
 import org.naukma.dev_ice.entity.Customer;
 import org.naukma.dev_ice.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -21,6 +22,9 @@ public class CustomerGeneratorService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public Customer generateUniqueCustomer() {
         String email;
         do {
@@ -35,7 +39,9 @@ public class CustomerGeneratorService {
         customer.setFirstName(faker.name().firstName());
         customer.setSecondName(faker.name().lastName());
         customer.setLastName(faker.name().lastName());
-        customer.setPassword(faker.internet().password(8, 16));
+
+        String rawPassword = faker.internet().password(8, 16);
+        customer.setPassword(passwordEncoder.encode(rawPassword));
 
         return customer;
     }
