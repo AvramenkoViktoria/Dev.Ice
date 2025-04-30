@@ -5,6 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.naukma.dev_ice.dto.OrderExportDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+@Service
 public class OrderExportService {
     private final JdbcTemplate jdbcTemplate;
 
@@ -124,5 +126,5 @@ public class OrderExportService {
         if (!ALLOWED_SORT_FIELDS.contains(field) || !ALLOWED_DIRECTIONS.contains(direction)) {
             throw new IllegalArgumentException("Invalid sort order: " + sortOrder);
         }
-    } 
+    }
 }

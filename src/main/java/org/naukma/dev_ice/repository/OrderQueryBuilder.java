@@ -2,96 +2,136 @@ package org.naukma.dev_ice.repository;
 
 import org.json.JSONObject;
 
-import java.util.StringJoiner;
+import java.util.*;
 
 public class OrderQueryBuilder {
 
-    public static String buildQuery(JSONObject queryParams) {
-        StringBuilder sqlQuery = new StringBuilder("SELECT * FROM \"order\" o");
+    public static class QueryWithParams {
+        public final String sql;
+        public final Map<String, Object> params;
 
-        StringJoiner whereConditions = new StringJoiner(" AND ");
+        public QueryWithParams(String sql, Map<String, Object> params) {
+            this.sql = sql;
+            this.params = params;
+        }
+    }
+
+    public static QueryWithParams buildQuery(JSONObject queryParams) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM \"order\" o");
+        List<String> conditions = new ArrayList<>();
+        Map<String, Object> params = new LinkedHashMap<>();
+        int paramIndex = 0;
 
         if (queryParams.has("filter")) {
             JSONObject filter = queryParams.getJSONObject("filter");
 
-            addEqualsCondition(filter, whereConditions, "manager", "o.manager");
-            addEqualsCondition(filter, whereConditions, "status", "o.status");
-            addEqualsCondition(filter, whereConditions, "payed", "o.payed");
-            addEqualsCondition(filter, whereConditions, "post", "o.post");
+            paramIndex = addEqualsCondition(filter, conditions, params, "manager", "o.manager", paramIndex);
+            paramIndex = addEqualsCondition(filter, conditions, params, "status", "o.status", paramIndex);
+            paramIndex = addEqualsCondition(filter, conditions, params, "payed", "o.payed", paramIndex);
+            paramIndex = addEqualsCondition(filter, conditions, params, "post", "o.post", paramIndex);
 
-            addRangeCondition(filter, whereConditions, "orderAmount", "o.order_amount", false);
-            addRangeCondition(filter, whereConditions, "placementDateRange", "o.placement_date", true);
-            addRangeCondition(filter, whereConditions, "dispatchDateRange", "o.dispatch_date", true);
+            paramIndex = addRangeCondition(filter, conditions, params, "orderAmount", "o.order_amount", paramIndex);
+            paramIndex = addRangeCondition(filter, conditions, params, "placementDateRange", "o.placement_date", paramIndex);
+            paramIndex = addRangeCondition(filter, conditions, params, "dispatchDateRange", "o.dispatch_date", paramIndex);
 
             if (filter.has("customerPhone")) {
                 String phone = filter.getString("customerPhone");
-                whereConditions.add("o.customer_id IN (SELECT customer_id FROM customer WHERE phone_num LIKE '%" + phone.replace("'", "''") + "%')");
+                String paramName = "customerPhone" + paramIndex++;
+                conditions.add("o.customer_id IN (SELECT customer_id FROM customer WHERE phone_num LIKE :" + paramName + ")");
+                params.put(paramName, "%" + phone + "%");
             }
         }
 
         if (queryParams.has("search")) {
             JSONObject search = queryParams.getJSONObject("search");
 
-            addEqualsCondition(search, whereConditions, "status", "o.status");
+            paramIndex = addEqualsCondition(search, conditions, params, "status", "o.status", paramIndex);
+            paramIndex = addEqualsCondition(search, conditions, params, "manager", "o.manager", paramIndex);
+
             if (search.has("id")) {
-                whereConditions.add("o.order_id = " + search.getLong("id"));
+                String paramName = "orderId" + paramIndex++;
+                conditions.add("o.order_id = :" + paramName);
+                params.put(paramName, search.getLong("id"));
             }
             if (search.has("customerPhone")) {
                 String phone = search.getString("customerPhone");
-                whereConditions.add("o.customer_id IN (SELECT customer_id FROM customer WHERE phone_num LIKE '%" + phone.replace("'", "''") + "%')");
+                String paramName = "customerPhone" + paramIndex++;
+                conditions.add("o.customer_id IN (SELECT customer_id FROM customer WHERE phone_num LIKE :" + paramName + ")");
+                params.put(paramName, "%" + phone + "%");
             }
-            addEqualsCondition(search, whereConditions, "manager", "o.manager");
         }
 
-        if (whereConditions.length() > 0) {
-            sqlQuery.append(" WHERE ").append(whereConditions);
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ").append(String.join(" AND ", conditions));
         }
 
         if (queryParams.has("sort")) {
             JSONObject sort = queryParams.getJSONObject("sort");
-            StringJoiner sortConditions = new StringJoiner(", ", " ORDER BY ", "");
+            List<String> sortFields = new ArrayList<>();
 
-            addSortCondition(sort, sortConditions, "id", "o.order_id");
-            addSortCondition(sort, sortConditions, "dispatchDate", "o.dispatch_date");
+            addSortCondition(sort, sortFields, "id", "o.order_id");
+            addSortCondition(sort, sortFields, "dispatchDate", "o.dispatch_date");
 
-            sqlQuery.append(sortConditions);
+            if (!sortFields.isEmpty()) {
+                sql.append(" ORDER BY ").append(String.join(", ", sortFields));
+            }
         }
 
-        return sqlQuery.toString();
+        return new QueryWithParams(sql.toString(), params);
     }
 
-
-    private static void addEqualsCondition(JSONObject obj, StringJoiner joiner, String key, String column) {
+    private static int addEqualsCondition(
+            JSONObject obj,
+            List<String> conditions,
+            Map<String, Object> params,
+            String key, String column,
+            int paramIndex) {
         if (obj.has(key)) {
             Object value = obj.get(key);
-            if (value instanceof Boolean || value instanceof Number) {
-                joiner.add(column + " = " + value);
-            } else {
-                joiner.add(column + " = '" + value.toString().replace("'", "''") + "'");
-            }
+            String paramName = key + paramIndex;
+            conditions.add(column + " = :" + paramName);
+            params.put(paramName, value);
+            paramIndex++;
         }
+        return paramIndex;
     }
 
-    private static void addRangeCondition(JSONObject obj, StringJoiner joiner, String key, String column, boolean quoteValues) {
+    private static int addRangeCondition(
+            JSONObject obj,
+            List<String> conditions,
+            Map<String, Object> params,
+            String key,
+            String column,
+            int paramIndex
+    ) {
         if (obj.has(key)) {
             JSONObject range = obj.getJSONObject(key);
-            String from = range.optString("from", null);
-            String to = range.optString("to", null);
 
-            if (from != null && !from.isEmpty()) {
-                joiner.add(column + " >= " + (quoteValues ? "'" + from + "'" : from));
+            Object from = range.opt("from");
+            Object to = range.opt("to");
+
+            if (from != null) {
+                String paramName = key + "From" + paramIndex;
+                conditions.add(column + " >= :" + paramName);
+                params.put(paramName, from);
+                paramIndex++;
             }
-            if (to != null && !to.isEmpty()) {
-                joiner.add(column + " <= " + (quoteValues ? "'" + to + "'" : to));
+
+            if (to != null) {
+                String paramName = key + "To" + paramIndex;
+                conditions.add(column + " <= :" + paramName);
+                params.put(paramName, to);
+                paramIndex++;
             }
         }
+        return paramIndex;
     }
 
-    private static void addSortCondition(JSONObject sortObj, StringJoiner joiner, String key, String column) {
+    private static void addSortCondition(JSONObject sortObj, List<String> sortFields, String key, String column) {
         if (sortObj.has(key)) {
             String direction = sortObj.getString(key).toUpperCase();
             if ("ASC".equals(direction) || "DESC".equals(direction)) {
-                joiner.add(column + " " + direction);
+                sortFields.add(column + " " + direction);
             }
         }
     }
