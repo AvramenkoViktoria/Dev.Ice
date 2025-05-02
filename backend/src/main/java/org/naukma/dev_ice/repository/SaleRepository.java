@@ -78,4 +78,65 @@ public class SaleRepository {
             throw new RuntimeException("Failed to retrieve all sales", e);
         }
     }
+
+    public void update(Long saleId, Sale sale) {
+        String query = "UPDATE sale SET name = ?, discount_value = ? WHERE sale_id = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, sale.getName());
+            ps.setInt(2, sale.getDiscountValue());
+            ps.setLong(3, saleId);
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new SQLException("No sale found with ID: " + saleId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update sale", e);
+        }
+    }
+
+    public void deleteById(Long saleId) {
+        String clearSaleInProducts = "UPDATE product SET sale_id = NULL WHERE sale_id = ?";
+        String deleteSale = "DELETE FROM sale WHERE sale_id = ?";
+
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps1 = conn.prepareStatement(clearSaleInProducts)) {
+                ps1.setLong(1, saleId);
+                ps1.executeUpdate();
+            }
+
+            try (PreparedStatement ps2 = conn.prepareStatement(deleteSale)) {
+                ps2.setLong(1, saleId);
+                int deleted = ps2.executeUpdate();
+                if (deleted == 0) {
+                    conn.rollback();
+                    throw new SQLException("No sale found with ID: " + saleId);
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    throw new RuntimeException("Failed to rollback during delete", ex);
+                }
+            }
+            throw new RuntimeException("Failed to delete sale", e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

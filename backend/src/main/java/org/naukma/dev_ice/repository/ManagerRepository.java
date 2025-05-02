@@ -119,6 +119,86 @@ public class ManagerRepository {
         return managers;
     }
 
+    public void update(Manager manager) {
+        String sql = """
+        UPDATE manager SET
+            second_name = ?, first_name = ?, last_name = ?, start_date = ?, finish_date = ?,
+            phone_num = ?, email = ?, password = ?
+        WHERE manager_id = ?
+    """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, manager.getSecondName());
+            ps.setString(2, manager.getFirstName());
+            ps.setString(3, manager.getLastName());
+            ps.setTimestamp(4, manager.getStartDate());
+            if (manager.getFinishDate() != null) {
+                ps.setTimestamp(5, manager.getFinishDate());
+            } else {
+                ps.setNull(5, Types.TIMESTAMP);
+            }
+            ps.setString(6, manager.getPhoneNum());
+            ps.setString(7, manager.getEmail());
+            ps.setString(8, manager.getPassword());
+            ps.setLong(9, manager.getManagerId());
+
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new SQLException("No manager found with ID: " + manager.getManagerId());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update manager", e);
+        }
+    }
+
+    public void deleteById(Long managerId) {
+        String updateOrdersSql = "UPDATE orders SET manager_id = NULL WHERE manager_id = ?";
+        String deleteManagerSql = "DELETE FROM manager WHERE manager_id = ?";
+
+        Connection conn = null;
+
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false); // Початок транзакції
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateOrdersSql)) {
+                updateStmt.setLong(1, managerId);
+                updateStmt.executeUpdate();
+            }
+
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteManagerSql)) {
+                deleteStmt.setLong(1, managerId);
+                int deleted = deleteStmt.executeUpdate();
+
+                if (deleted == 0) {
+                    throw new SQLException("No manager found with ID: " + managerId);
+                }
+            }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackException) {
+                    throw new RuntimeException("Failed to rollback transaction", rollbackException);
+                }
+            }
+            throw new RuntimeException("Failed to delete manager with ID: " + managerId, e);
+
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public void save(Manager manager) {
         String query = "INSERT INTO manager (second_name, first_name, last_name, start_date, finish_date, phone_num, email, password) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

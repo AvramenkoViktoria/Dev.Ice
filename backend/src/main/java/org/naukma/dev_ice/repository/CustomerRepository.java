@@ -46,7 +46,6 @@ public class CustomerRepository {
         }
     }
 
-
     public boolean existsByEmail(String email) {
         String query = "SELECT 1 FROM customer WHERE email = ?";
         try (Connection conn = dataSource.getConnection();
@@ -121,6 +120,74 @@ public class CustomerRepository {
         }
 
         return customers;
+    }
+
+    public void update(Customer customer) {
+        String sql = """
+        UPDATE customer
+        SET phone_num = ?, second_name = ?, first_name = ?, last_name = ?, password = ?
+        WHERE email = ?
+    """;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customer.getPhoneNum());
+            ps.setString(2, customer.getSecondName());
+            ps.setString(3, customer.getFirstName());
+            ps.setString(4, customer.getLastName());
+            ps.setString(5, customer.getPassword());
+            ps.setString(6, customer.getEmail());
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new SQLException("Customer not found with email: " + customer.getEmail());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update customer", e);
+        }
+    }
+
+    public void deleteByEmail(String email) {
+        String clearCustomerInOrders = "UPDATE orders SET customer_email = NULL WHERE customer_email = ?";
+        String deleteCustomer = "DELETE FROM customer WHERE email = ?";
+
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps1 = conn.prepareStatement(clearCustomerInOrders)) {
+                ps1.setString(1, email);
+                ps1.executeUpdate();
+            }
+
+            try (PreparedStatement ps2 = conn.prepareStatement(deleteCustomer)) {
+                ps2.setString(1, email);
+                int deleted = ps2.executeUpdate();
+                if (deleted == 0) {
+                    conn.rollback();
+                    throw new SQLException("Customer not found with email: " + email);
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    throw new RuntimeException("Failed to rollback during delete", ex);
+                }
+            }
+            throw new RuntimeException("Failed to delete customer", e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
