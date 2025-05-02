@@ -1,47 +1,18 @@
 package org.naukma.dev_ice.entity;
 
-import jakarta.persistence.*;
-
 import java.sql.Timestamp;
 
-@Entity
-@Table(name = "\"order\"")
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id")
     private Long orderId;
-
-    @ManyToOne
-    @JoinColumn(name = "manager_id", referencedColumnName = "manager_id")
     private Manager manager;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "email")
     private Customer customer;
-
-    @Column(name = "status", nullable = false)
     private String status;
-
-    @Column(name = "placement_date", nullable = false)
     private Timestamp placementDate;
-
-    @Column(name = "dispatch_date")
     private Timestamp dispatchDate;
-
-    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
-
-    @Column(name = "payed", nullable = false)
     private Boolean payed;
-
-    @Column(name = "post", nullable = false)
     private String post;
-
-    @Column(name = "post_office", nullable = false)
     private String postOffice;
-
-    @Column(name = "order_amount", nullable = false)
     private Double orderAmount;
 
     public Long getOrderId() {

@@ -1,25 +1,9 @@
 package org.naukma.dev_ice.entity;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "order_product")
 public class OrderProduct {
-
-    @EmbeddedId
     private OrderProductId id;
-
-    @ManyToOne
-    @MapsId("orderId")
-    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private Order order;
-
-    @ManyToOne
-    @MapsId("productId")
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     private Product product;
-
-    @Column(name = "number", nullable = false)
     private Integer number;
 
     public OrderProductId getId() {

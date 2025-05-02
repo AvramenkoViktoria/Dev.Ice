@@ -1,9 +1,9 @@
 package org.naukma.dev_ice.config;
 
 import org.naukma.dev_ice.service.generator.CustomerGeneratorService;
-import org.naukma.dev_ice.service.generator.ProductGeneratorService;
 import org.naukma.dev_ice.service.generator.ManagerGeneratorService;
 import org.naukma.dev_ice.service.generator.OrderGeneratorService;
+import org.naukma.dev_ice.service.generator.ProductGeneratorService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,25 +11,33 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DataConfig {
 
-    private final ProductGeneratorService productGenerator;
     private final CustomerGeneratorService customerGenerator;
     private final ManagerGeneratorService managerGenerator;
+    private final ProductGeneratorService productGenerator;
     private final OrderGeneratorService orderGenerator;
+    private final DataBaseInitializer dataBaseInitializer;
 
-    public DataConfig(ManagerGeneratorService managerGenerator, ProductGeneratorService productGenerator, CustomerGeneratorService customerGenerator, OrderGeneratorService orderGenerator) {
+    public DataConfig(DataBaseInitializer dataBaseInitializer,
+                      CustomerGeneratorService customerGenerator,
+                      ManagerGeneratorService managerGenerator,
+                      ProductGeneratorService productGenerator,
+                      OrderGeneratorService orderGenerator) {
+        this.dataBaseInitializer = dataBaseInitializer;
+        this.customerGenerator = customerGenerator;
         this.managerGenerator = managerGenerator;
         this.productGenerator = productGenerator;
-        this.customerGenerator = customerGenerator;
         this.orderGenerator = orderGenerator;
     }
 
     @Bean
     public CommandLineRunner dataInitializer() {
         return args -> {
-//            managerGenerator.generateManagers(5);
-//            productGenerator.generateSalesAndProducts(10, 500);
-//            customerGenerator.generateCustomers(300);
-//            orderGenerator.generateOrders(500);
+            dataBaseInitializer.createTables();
+
+            managerGenerator.generateManagers(5);
+            customerGenerator.generateCustomers(10);
+            productGenerator.generateSalesAndProducts(5, 10);
+            orderGenerator.generateOrders(10);
         };
     }
 }

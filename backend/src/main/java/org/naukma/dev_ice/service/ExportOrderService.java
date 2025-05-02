@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class OrderExportService {
+public class ExportOrderService {
     private final JdbcTemplate jdbcTemplate;
 
     private static final List<String> ALLOWED_SORT_FIELDS = List.of(
@@ -24,7 +24,7 @@ public class OrderExportService {
 
     private static final List<String> ALLOWED_DIRECTIONS = List.of("ASC", "DESC");
 
-    public OrderExportService(JdbcTemplate jdbcTemplate) {
+    public ExportOrderService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

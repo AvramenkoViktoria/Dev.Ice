@@ -7,6 +7,7 @@ import org.naukma.dev_ice.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -48,7 +49,12 @@ public class ProductGeneratorService {
             product.setDiagonal(generateRandomDiagonal());
             product.setInternalStorage(generateRandomInternalStorage());
 
-            product.setSale(saleRepository.getReferenceById((long) random.nextInt(1, 11)));
+            int count = saleRepository.countAll();
+            if (count > 0) {
+                long randomId = 1 + new Random().nextInt(count);
+                Sale randomSale = saleRepository.findById(randomId);
+                product.setSale(randomSale);
+            }
 
             productRepository.save(product);
         }

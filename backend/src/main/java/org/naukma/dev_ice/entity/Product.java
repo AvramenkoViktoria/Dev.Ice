@@ -1,60 +1,23 @@
 package org.naukma.dev_ice.entity;
 
-import jakarta.persistence.*;
 import java.sql.Date;
 
-@Entity
-@Table(name = "product")
 public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
     private Long productId;
-
-    @ManyToOne
-    @JoinColumn(name = "sale_id", referencedColumnName = "sale_id")
     private Sale sale;
-
-    @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "selling_price", nullable = false)
     private Double sellingPrice;
-
-    @Column(name = "purchase_price", nullable = false)
     private Double purchasePrice;
-
-    @Column(name = "category", nullable = false)
     private String category;
-
-    @Column(name = "in_stock", nullable = false)
     private Boolean inStock;
-
-    @Column(name = "storage_quantity", nullable = false)
     private Integer storageQuantity;
-
-    @Column(name = "producer", nullable = false)
     private String producer;
-
-    @Column(name = "brand", nullable = false)
     private String brand;
-
-    @Column(name = "ram", nullable = false)
     private Integer ram;
-
-    @Column(name = "color", nullable = false)
     private String color;
-
-    @Column(name = "country", nullable = false)
     private String country;
-
-    @Column(name = "prod_year", nullable = false)
     private Date prodYear;
-
-    @Column(name = "diagonal", nullable = false)
     private Double diagonal;
-
-    @Column(name = "internal_storage", nullable = false)
     private Integer internalStorage;
 
     public Long getProductId() {

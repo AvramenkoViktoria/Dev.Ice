@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.naukma.dev_ice.entity.Customer;
 import org.naukma.dev_ice.repository.CustomerRepository;
 import org.naukma.dev_ice.repository.ManagerRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,7 @@ public class AuthController {
 
     private final CustomerRepository customerRepository;
     private final ManagerRepository managerRepository;
-    ;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/register")
     public String register(@RequestBody Map<String, String> request) {
@@ -44,9 +44,16 @@ public class AuthController {
         String email = request.get("email");
         String rawPassword = request.get("password");
 
-        return customerRepository.findById(email)
-                .filter(c -> passwordEncoder.matches(rawPassword, c.getPassword()))
-                .map(c -> "Login successful!")
-                .orElse("Invalid credentials.");
+        try {
+            Customer customer = customerRepository.findById(email);
+
+            if (customer != null && passwordEncoder.matches(rawPassword, customer.getPassword()))
+                return "Login successful!";
+            else
+                return "Invalid credentials.";
+
+        } catch (Exception e) {
+            return "Error during login: " + e.getMessage();
+        }
     }
 }

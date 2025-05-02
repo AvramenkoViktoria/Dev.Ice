@@ -20,8 +20,6 @@ public class OrderExportDto {
     private String customerPhone;
     private String productSummary;
 
-    // Getters and Setters
-
     public Long getOrderId() {
         return orderId;
     }

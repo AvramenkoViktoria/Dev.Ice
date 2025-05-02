@@ -5,6 +5,7 @@ import org.naukma.dev_ice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
@@ -29,7 +30,7 @@ public class OrderGeneratorService {
 
     private final Random random = new Random();
 
-    public void generateOrders(int count) {
+    public void generateOrders(int count) throws SQLException {
         List<Manager> managers = managerRepository.findAll();
         List<Product> products = productRepository.findAll();
         List<Customer> customers = customerRepository.findAll();
@@ -45,20 +46,19 @@ public class OrderGeneratorService {
             order.setPayed(random.nextBoolean());
             order.setPost(randomPost());
             order.setPostOffice("№" + (random.nextInt(100) + 1));
-
             order.setOrderAmount(0.0);
 
-            order = orderRepository.save(order);
-            Set<OrderProduct> orderProducts = generateOrderProducts(order, products);
+            orderRepository.save(order);
 
+            Set<OrderProduct> orderProducts = generateOrderProducts(order, products);
             double totalAmount = 0.0;
             for (OrderProduct op : orderProducts) {
                 orderProductRepository.save(op);
                 totalAmount += op.getProduct().getSellingPrice() * op.getNumber();
             }
 
-            order.setOrderAmount(totalAmount);
-            orderRepository.save(order);
+            // update only amount
+            orderRepository.updateOrderAmount(order.getOrderId(), totalAmount);
         }
     }
 

@@ -1,39 +1,16 @@
 package org.naukma.dev_ice.entity;
 
-import jakarta.persistence.*;
-
 import java.sql.Timestamp;
 
-@Entity
-@Table(name = "manager")
 public class Manager {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "manager_id")
     private Long managerId;
-
-    @Column(name = "second_name", nullable = false)
     private String secondName;
-
-    @Column(name = "first_name", nullable = false)
     private String firstName;
-
-    @Column(name = "last_name", nullable = false)
     private String lastName;
-
-    @Column(name = "start_date", nullable = false)
     private Timestamp startDate;
-
-    @Column(name = "finish_date")
     private Timestamp finishDate;
-
-    @Column(name = "phone_num", nullable = false)
     private String phoneNum;
-
-    @Column(name = "email", nullable = false)
     private String email;
-
-    @Column(name = "password", nullable = false)
     private String password;
 
     public Long getManagerId() {

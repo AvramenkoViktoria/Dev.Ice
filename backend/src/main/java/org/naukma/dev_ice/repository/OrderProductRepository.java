@@ -1,8 +1,36 @@
 package org.naukma.dev_ice.repository;
 
 import org.naukma.dev_ice.entity.OrderProduct;
-import org.naukma.dev_ice.entity.OrderProductId;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface OrderProductRepository extends JpaRepository<OrderProduct, OrderProductId> {
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+@Repository
+public class OrderProductRepository {
+
+    private final DataSource dataSource;
+
+    public OrderProductRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void save(OrderProduct orderProduct) {
+        String query = "INSERT INTO order_product (order_id, product_id, number) VALUES (?, ?, ?)";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setLong(1, orderProduct.getOrder().getOrderId());
+            ps.setLong(2, orderProduct.getProduct().getProductId());
+            ps.setInt(3, orderProduct.getNumber());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to save order-product relation", e);
+        }
+    }
 }

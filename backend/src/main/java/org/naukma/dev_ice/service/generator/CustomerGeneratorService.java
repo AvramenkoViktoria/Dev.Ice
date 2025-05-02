@@ -3,7 +3,7 @@ package org.naukma.dev_ice.service.generator;
 import com.github.javafaker.Faker;
 import org.naukma.dev_ice.entity.Customer;
 import org.naukma.dev_ice.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,13 @@ public class CustomerGeneratorService {
     private static final Set<String> usedEmails = new HashSet<>();
     private static final Random random = new Random();
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public CustomerGeneratorService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
+    }
 
     public Customer generateUniqueCustomer() {
         String email;
@@ -55,7 +57,8 @@ public class CustomerGeneratorService {
     }
 
     public void generateCustomers(int count) {
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             customerRepository.save(generateUniqueCustomer());
+        }
     }
 }
