@@ -31,8 +31,12 @@ public class OrderRepository {
                 Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-            statement.setLong(1, order.getManager().getManagerId());
-            statement.setString(2, order.getCustomer().getEmail());
+            if (order.getManagerId() != null) {
+                statement.setLong(1, order.getManagerId());
+            } else {
+                statement.setNull(1, java.sql.Types.BIGINT);
+            }
+            statement.setString(2, order.getCustomerEmail());
             statement.setString(3, order.getStatus());
             statement.setTimestamp(4, order.getPlacementDate());
 
@@ -74,7 +78,7 @@ public class OrderRepository {
 
             for (OrderProduct op : orderProducts) {
                 ps.setLong(1, savedOrder.getOrderId());
-                ps.setLong(2, op.getProduct().getProductId());
+                ps.setLong(2, op.getProductId());
                 ps.setInt(3, op.getNumber());
                 ps.addBatch();
             }
@@ -106,8 +110,8 @@ public class OrderRepository {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement updateOrderStmt = connection.prepareStatement(updateOrderSql)) {
 
-            updateOrderStmt.setLong(1, order.getManager().getManagerId());
-            updateOrderStmt.setString(2, order.getCustomer().getEmail());
+            updateOrderStmt.setLong(1, order.getManagerId());
+            updateOrderStmt.setString(2, order.getCustomerEmail());
             updateOrderStmt.setString(3, order.getStatus());
             updateOrderStmt.setTimestamp(4, order.getPlacementDate());
 
@@ -151,7 +155,7 @@ public class OrderRepository {
 
             for (OrderProduct op : orderProducts) {
                 insertOrderProductStmt.setLong(1, order.getOrderId());
-                insertOrderProductStmt.setLong(2, op.getProduct().getProductId());
+                insertOrderProductStmt.setLong(2, op.getProductId());
                 insertOrderProductStmt.setInt(3, op.getNumber());
                 insertOrderProductStmt.addBatch();
             }

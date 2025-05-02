@@ -18,7 +18,7 @@ public class OrderQueryBuilder {
     }
 
     public QueryWithParams buildQuery(JSONObject queryParams) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM \"order\" o");
+        StringBuilder sql = new StringBuilder("SELECT * FROM orders o");
         List<String> conditions = new ArrayList<>();
         Map<String, Object> params = new LinkedHashMap<>();
         int paramIndex = 0;
@@ -62,10 +62,10 @@ public class OrderQueryBuilder {
 
                     if (allManagerIds.equals(providedIds)) {
                         conditions.add("NOT EXISTS (" +
-                                       "SELECT 1 FROM manager m " +
-                                       "WHERE NOT EXISTS (" +
-                                       "SELECT 1 FROM \"order\" o2 " +
-                                       "WHERE o2.manager_id = m.id AND o2.id = o.id" +
+                                       "SELECT 1 FROM orders o2 " +
+                                       "WHERE o2.order_id = o.order_id AND NOT EXISTS (" +
+                                       "SELECT 1 FROM orders o3 " +
+                                       "WHERE o3.order_id = o2.order_id AND o3.manager_id IS NOT NULL" +
                                        "))");
                         continue;
                     }
@@ -103,6 +103,8 @@ public class OrderQueryBuilder {
             }
         }
 
+        System.out.println(sql.toString());
+        System.out.println(params);
         return new QueryWithParams(sql.toString(), params);
     }
 

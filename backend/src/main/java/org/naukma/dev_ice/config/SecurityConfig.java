@@ -25,6 +25,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/register", "/login").permitAll()
+                        .requestMatchers("/api/**").permitAll() // <- Дозволити доступ до API без авторизації
                         .requestMatchers("/manager").hasRole("MANAGER")
                         .anyRequest().hasRole("CUSTOMER")
                 )

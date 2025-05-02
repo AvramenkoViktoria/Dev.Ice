@@ -64,6 +64,57 @@ public class ProductRepository {
         return products;
     }
 
+    public Product findById(Long id) throws SQLException {
+        String sql = """
+        SELECT product_id, sale_id, name, selling_price, purchase_price,
+               category, in_stock, storage_quantity, producer, brand,
+               ram, color, country, prod_year, diagonal, internal_storage
+        FROM product
+        WHERE product_id = ?
+    """;
+
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setLong(1, id);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    Product product = new Product();
+
+                    product.setProductId(rs.getLong("product_id"));
+                    Long saleId = rs.getObject("sale_id", Long.class);
+
+                    if (saleId != null) {
+                        SaleRepository saleRepository = new SaleRepository(dataSource);
+                        Sale sale = saleRepository.findById(saleId);
+                        product.setSale(sale);
+                    }
+
+                    product.setName(rs.getString("name"));
+                    product.setSellingPrice(rs.getDouble("selling_price"));
+                    product.setPurchasePrice(rs.getDouble("purchase_price"));
+                    product.setCategory(rs.getString("category"));
+                    product.setInStock(rs.getBoolean("in_stock"));
+                    product.setStorageQuantity(rs.getInt("storage_quantity"));
+                    product.setProducer(rs.getString("producer"));
+                    product.setBrand(rs.getString("brand"));
+                    product.setRam(rs.getObject("ram") != null ? rs.getInt("ram") : null);
+                    product.setColor(rs.getString("color"));
+                    product.setCountry(rs.getString("country"));
+                    product.setProdYear(rs.getDate("prod_year"));
+                    product.setDiagonal(rs.getObject("diagonal") != null ? rs.getDouble("diagonal") : null);
+                    product.setInternalStorage(rs.getObject("internal_storage") != null ? rs.getInt("internal_storage") : null);
+
+                    return product;
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
+
     public void deleteById(Long productId) {
         String deleteOrderProductQuery = "DELETE FROM order_product WHERE product_id = ?";
         String deleteProductQuery = "DELETE FROM product WHERE product_id = ?";

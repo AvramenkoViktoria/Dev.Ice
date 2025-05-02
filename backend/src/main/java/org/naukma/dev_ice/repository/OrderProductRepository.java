@@ -23,8 +23,8 @@ public class OrderProductRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            ps.setLong(1, orderProduct.getOrder().getOrderId());
-            ps.setLong(2, orderProduct.getProduct().getProductId());
+            ps.setLong(1, orderProduct.getOrderId());
+            ps.setLong(2, orderProduct.getProductId());
             ps.setInt(3, orderProduct.getNumber());
 
             ps.executeUpdate();

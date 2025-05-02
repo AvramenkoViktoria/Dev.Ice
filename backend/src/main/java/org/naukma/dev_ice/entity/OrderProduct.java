@@ -2,8 +2,8 @@ package org.naukma.dev_ice.entity;
 
 public class OrderProduct {
     private OrderProductId id;
-    private Order order;
-    private Product product;
+    private Long orderId;
+    private Long productId;
     private Integer number;
 
     public OrderProductId getId() {
@@ -14,20 +14,20 @@ public class OrderProduct {
         this.id = id;
     }
 
-    public Order getOrder() {
-        return order;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
-    public Product getProduct() {
-        return product;
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
     public Integer getNumber() {

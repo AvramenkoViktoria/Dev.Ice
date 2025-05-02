@@ -4,8 +4,8 @@ import java.sql.Timestamp;
 
 public class Order {
     private Long orderId;
-    private Manager manager;
-    private Customer customer;
+    private Long managerId;
+    private String customerEmail;
     private String status;
     private Timestamp placementDate;
     private Timestamp dispatchDate;
@@ -23,24 +23,20 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public Manager getManager() {
-        return manager;
+    public Long getManagerId() {
+        return managerId;
     }
 
-    public void setManager(Manager manager) {
-        this.manager = manager;
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
     }
 
-    public String getStatus() {
-        return status;
+    public String getCustomerEmail() {
+        return customerEmail;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
     }
 
     public void setStatus(String status) {
@@ -101,5 +97,9 @@ public class Order {
 
     public void setOrderAmount(Double orderAmount) {
         this.orderAmount = orderAmount;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

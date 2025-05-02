@@ -37,8 +37,8 @@ public class OrderGeneratorService {
 
         for (int i = 0; i < count; i++) {
             Order order = new Order();
-            order.setManager(randomFrom(managers));
-            order.setCustomer(randomFrom(customers));
+            order.setManagerId(randomFrom(managers).getManagerId());
+            order.setCustomerEmail(randomFrom(customers).getEmail());
             order.setStatus(randomStatus());
             order.setPlacementDate(randomTimestamp());
             order.setDispatchDate(random.nextBoolean() ? Timestamp.from(Instant.now()) : null);
@@ -54,7 +54,13 @@ public class OrderGeneratorService {
             double totalAmount = 0.0;
             for (OrderProduct op : orderProducts) {
                 orderProductRepository.save(op);
-                totalAmount += op.getProduct().getSellingPrice() * op.getNumber();
+
+                Product product = productRepository.findById(op.getProductId());
+                if (product != null) {
+                    totalAmount += product.getSellingPrice() * op.getNumber();
+                } else {
+                    throw new IllegalArgumentException("Product not found with ID: " + op.getProductId());
+                }
             }
 
             orderRepository.updateOrderAmount(order.getOrderId(), totalAmount);
@@ -75,8 +81,8 @@ public class OrderGeneratorService {
             OrderProductId id = new OrderProductId(order.getOrderId(), product.getProductId());
             OrderProduct orderProduct = new OrderProduct();
             orderProduct.setId(id);
-            orderProduct.setOrder(order);
-            orderProduct.setProduct(product);
+            orderProduct.setOrderId(order.getOrderId());
+            orderProduct.setProductId(product.getProductId());
             orderProduct.setNumber(quantity);
 
             orderProducts.add(orderProduct);

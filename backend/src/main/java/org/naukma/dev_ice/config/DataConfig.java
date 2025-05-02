@@ -34,10 +34,10 @@ public class DataConfig {
         return args -> {
             dataBaseInitializer.createTables();
 
-            managerGenerator.generateManagers(3);
-            customerGenerator.generateCustomers(10);
-            productGenerator.generateSalesAndProducts(5, 10);
-            orderGenerator.generateOrders(10);
+//            managerGenerator.generateManagers(3);
+//            customerGenerator.generateCustomers(10);
+//            productGenerator.generateSalesAndProducts(5, 10);
+//            orderGenerator.generateOrders(10);
         };
     }
 }

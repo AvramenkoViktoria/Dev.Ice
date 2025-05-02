@@ -1,6 +1,7 @@
 package org.naukma.dev_ice.dto;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class OrderRequestDto {
     public Long managerId;
@@ -13,4 +14,11 @@ public class OrderRequestDto {
     public String post;
     public String postOffice;
     public Double orderAmount;
+
+    public List<ProductQuantity> products;
+
+    public static class ProductQuantity {
+        public Long productId;
+        public Integer number;
+    }
 }
