@@ -57,7 +57,6 @@ public class OrderGeneratorService {
                 totalAmount += op.getProduct().getSellingPrice() * op.getNumber();
             }
 
-            // update only amount
             orderRepository.updateOrderAmount(order.getOrderId(), totalAmount);
         }
     }

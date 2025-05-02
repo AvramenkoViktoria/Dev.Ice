@@ -11,14 +11,16 @@ import java.util.Map;
 public class OrderCustomRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final OrderQueryBuilder orderQueryBuilder;
 
-    public OrderCustomRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public OrderCustomRepository(NamedParameterJdbcTemplate jdbcTemplate,
+                                 OrderQueryBuilder orderQueryBuilder) {
         this.jdbcTemplate = jdbcTemplate;
+        this.orderQueryBuilder = orderQueryBuilder;
     }
 
     public List<Map<String, Object>> findOrders(JSONObject queryParams) {
-        OrderQueryBuilder.QueryWithParams built = OrderQueryBuilder.buildQuery(queryParams);
-
-        return jdbcTemplate.queryForList(built.sql, built.params);
+        QueryWithParams built = orderQueryBuilder.buildQuery(queryParams);
+        return jdbcTemplate.queryForList(built.getQuery(), built.getParams());
     }
 }
