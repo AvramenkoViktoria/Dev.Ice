@@ -39,9 +39,9 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/register", "/login", "/api/auth/me").permitAll()
+                        .requestMatchers( "/login", "/api/auth/me", "/api/customers/**").permitAll()
                         .requestMatchers("/home").authenticated()
-                        .requestMatchers("/api/customers/**", "/api/managers/**", "/api/orders/**", "/api/sales/**").hasRole("MANAGER")
+                        .requestMatchers("/api/managers/**", "/api/orders/**", "/api/sales/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

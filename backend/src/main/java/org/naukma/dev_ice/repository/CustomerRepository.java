@@ -1,6 +1,7 @@
 package org.naukma.dev_ice.repository;
 
 import org.naukma.dev_ice.entity.Customer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -201,7 +202,8 @@ public class CustomerRepository {
             ps.setString(3, customer.getSecondName());
             ps.setString(4, customer.getFirstName());
             ps.setString(5, customer.getLastName());
-            ps.setString(6, customer.getPassword());
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            ps.setString(6, encoder.encode(customer.getPassword()));
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save customer", e);

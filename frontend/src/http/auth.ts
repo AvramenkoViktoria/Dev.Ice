@@ -1,3 +1,6 @@
+import {Customer} from './dto';
+import {createCustomer} from './customer';
+
 /**
  * Sends a login request with email and password.
  * @param email The user's email.
@@ -62,3 +65,18 @@ export async function fetchUser(): Promise<{
         return null;
     }
 }
+
+export const registerAndLogin = async (
+    customer: Customer,
+): Promise<boolean> => {
+    const registrationSuccess = await createCustomer(customer);
+    if (!registrationSuccess) return false;
+
+    try {
+        const loginMessage = await login(customer.email, customer.password);
+        return loginMessage === 'Login successful!';
+    } catch (error) {
+        console.error('Auto-login after registration failed:', error);
+        return false;
+    }
+};

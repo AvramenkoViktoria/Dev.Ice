@@ -66,7 +66,17 @@ const AppRoutes = () => {
                     />
                 }
             />
-            <Route path='/register' element={<Register />} />
+            <Route
+                path='/register'
+                element={
+                    <Register
+                        setIsAuthenticated={setIsAuthenticated}
+                        setIsAdmin={setIsAdmin}
+                        setLoading={setLoading}
+                    />
+                }
+            />
+
             <Route
                 path='/home'
                 element={

@@ -8,6 +8,7 @@ export const createCustomer = async (customer: Customer): Promise<boolean> => {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(customer),
+            credentials: 'include',
         });
 
         if (!response.ok) {
