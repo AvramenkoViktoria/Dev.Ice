@@ -1,6 +1,7 @@
 package org.naukma.dev_ice.repository;
 
 import org.naukma.dev_ice.entity.Manager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -148,7 +149,11 @@ public class ManagerRepository {
                 throw new SQLException("No manager found with ID: " + manager.getManagerId());
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to update manager", e);
+            System.err.println("SQL error while updating manager:");
+            System.err.println("Message: " + e.getMessage());
+            System.err.println("SQLState: " + e.getSQLState());
+            System.err.println("ErrorCode: " + e.getErrorCode());
+            throw new RuntimeException("Failed to update manager: " + e.getMessage(), e);
         }
     }
 
@@ -215,7 +220,8 @@ public class ManagerRepository {
             }
             ps.setString(6, manager.getPhoneNum());
             ps.setString(7, manager.getEmail());
-            ps.setString(8, manager.getPassword());
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            ps.setString(8, passwordEncoder.encode(manager.getPassword()));
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save manager", e);

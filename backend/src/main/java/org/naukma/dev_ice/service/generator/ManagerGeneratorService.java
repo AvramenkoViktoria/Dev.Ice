@@ -46,7 +46,7 @@ public class ManagerGeneratorService {
             manager.setEmail(faker.internet().emailAddress());
 
             String rawPassword = faker.internet().password(8, 16);
-            manager.setPassword(passwordEncoder.encode(rawPassword));
+            manager.setPassword(rawPassword);
 
             managerRepository.save(manager);
         }

@@ -32,13 +32,13 @@ public class ExportOrderService {
         validateSortOrder(sortOrder);
 
         String sql = "SELECT " +
-                "    o.order_id, o.manager_id, o.customer_id, " +
+                "    o.order_id, o.manager_id, o.customer_email, " +
                 "    o.status, o.placement_date, o.dispatch_date, " +
                 "    o.payment_method, o.payed, o.post, o.post_office, o.order_amount, " +
                 "    c.first_name, c.second_name, c.phone_num, " +
                 "    array_agg(p.name || ' ' || op.number) AS product_summary " +
-                "FROM \"order\" o " +
-                "JOIN customer c ON o.customer_id = c.email " +
+                "FROM \"orders\" o " +
+                "JOIN customer c ON o.customer_email = c.email " +
                 "JOIN order_product op ON o.order_id = op.order_id " +
                 "JOIN product p ON op.product_id = p.product_id " +
                 "WHERE o.order_id IN (" + String.join(",", Collections.nCopies(orderIds.size(), "?")) + ") " +
@@ -51,7 +51,7 @@ public class ExportOrderService {
                 OrderExportDto order = new OrderExportDto();
                 order.setOrderId(rs.getLong("order_id"));
                 order.setManagerId(rs.getInt("manager_id"));
-                order.setCustomerId(rs.getString("customer_id"));
+                order.setCustomerId(rs.getString("customer_email"));
                 order.setStatus(rs.getString("status"));
                 order.setPlacementDate(rs.getTimestamp("placement_date").toLocalDateTime());
                 order.setDispatchDate(rs.getTimestamp("dispatch_date") != null ? rs.getTimestamp("dispatch_date").toLocalDateTime() : null);
@@ -105,6 +105,7 @@ public class ExportOrderService {
             }
 
             try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                System.out.println(sql);
                 workbook.write(fileOut);
             }
         }

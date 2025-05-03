@@ -11,6 +11,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
+
+import java.text.SimpleDateFormat;
+
 @Service
 public class ManagerProductStatisticsService {
     private final DataSource dataSource;
@@ -24,9 +28,10 @@ public class ManagerProductStatisticsService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         long managerId;
-        String fromDate;
-        String toDate;
+        String fromDate = null;
+        String toDate = null;
 
+        // Parsing the JSON input
         try {
             JsonNode rootNode = objectMapper.readTree(jsonInput);
             managerId = rootNode.path("managerId").asLong();
@@ -37,6 +42,12 @@ public class ManagerProductStatisticsService {
             throw new RuntimeException("Invalid JSON input", e);
         }
 
+        // Check if the date values are empty or invalid and handle accordingly
+        if (fromDate == null || fromDate.isEmpty() || toDate == null || toDate.isEmpty()) {
+            throw new RuntimeException("Both 'from' and 'to' dates must be provided and valid.");
+        }
+
+        // SQL query to fetch product sales statistics
         String sql = """
             SELECT
                 p.product_id,
@@ -56,12 +67,21 @@ public class ManagerProductStatisticsService {
                 total_sales DESC;
         """;
 
+        // Date format to match the string format in fromDate and toDate
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, managerId);
-            stmt.setString(2, fromDate);
-            stmt.setString(3, toDate);
+
+            // Convert fromDate and toDate into java.sql.Timestamp
+            try {
+                stmt.setTimestamp(2, new Timestamp(sdf.parse(fromDate).getTime()));
+                stmt.setTimestamp(3, new Timestamp(sdf.parse(toDate).getTime()));
+            } catch (java.text.ParseException e) {
+                throw new RuntimeException("Invalid date format. Expected format: yyyy-MM-dd", e);
+            }
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -80,3 +100,5 @@ public class ManagerProductStatisticsService {
         return results;
     }
 }
+
+
