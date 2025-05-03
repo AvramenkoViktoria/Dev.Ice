@@ -40,3 +40,22 @@ export type OrderUpdateRequestDto = {
     order: Order;
     orderProducts: OrderProduct[];
 };
+
+export type Product = {
+    productId?: number;
+    saleId: number;
+    name: string;
+    sellingPrice: number;
+    purchasePrice: number;
+    category: string;
+    inStock: boolean;
+    storageQuantity: number;
+    producer: string;
+    brand: string;
+    ram: number;
+    color: string;
+    country: string;
+    prodYear: string;
+    diagonal: number;
+    internalStorage: number;
+};

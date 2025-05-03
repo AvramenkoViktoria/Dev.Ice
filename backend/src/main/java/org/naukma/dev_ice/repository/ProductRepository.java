@@ -51,7 +51,7 @@ public class ProductRepository {
                 if (!rs.wasNull()) {
                     Sale sale = new Sale();
                     sale.setSaleId(saleId);
-                    product.setSale(sale);
+                    product.setSaleId(sale.getSaleId());
                 }
 
                 products.add(product);
@@ -89,7 +89,7 @@ public class ProductRepository {
                     if (saleId != null) {
                         SaleRepository saleRepository = new SaleRepository(dataSource);
                         Sale sale = saleRepository.findById(saleId);
-                        product.setSale(sale);
+                        product.setSaleId(sale.getSaleId());
                     }
 
                     product.setName(rs.getString("name"));
@@ -174,8 +174,8 @@ public class ProductRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            if (product.getSale() != null) {
-                ps.setLong(1, product.getSale().getSaleId());
+            if (product.getSaleId() != null) {
+                ps.setLong(1, product.getSaleId());
             } else {
                 ps.setNull(1, java.sql.Types.BIGINT);
             }
@@ -214,8 +214,8 @@ public class ProductRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            if (product.getSale() != null) {
-                ps.setLong(1, product.getSale().getSaleId());
+            if (product.getSaleId() != null) {
+                ps.setLong(1, product.getSaleId());
             } else {
                 ps.setNull(1, java.sql.Types.BIGINT);
             }

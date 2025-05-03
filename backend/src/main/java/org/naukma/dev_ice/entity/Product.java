@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Product {
     private Long productId;
-    private Sale sale;
+    private Long saleId;
     private String name;
     private Double sellingPrice;
     private Double purchasePrice;
@@ -28,12 +28,12 @@ public class Product {
         this.productId = productId;
     }
 
-    public Sale getSale() {
-        return sale;
+    public Long getSaleId() {
+        return saleId;
     }
 
-    public void setSale(Sale sale) {
-        this.sale = sale;
+    public void setSaleId(Long saleId) {
+        this.saleId = saleId;
     }
 
     public String getName() {

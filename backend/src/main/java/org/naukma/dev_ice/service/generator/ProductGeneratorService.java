@@ -53,7 +53,7 @@ public class ProductGeneratorService {
             if (count > 0) {
                 long randomId = 1 + new Random().nextInt(count);
                 Sale randomSale = saleRepository.findById(randomId);
-                product.setSale(randomSale);
+                product.setSaleId(randomSale.getSaleId());
             }
 
             productRepository.save(product);
