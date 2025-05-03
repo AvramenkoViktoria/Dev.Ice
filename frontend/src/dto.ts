@@ -59,3 +59,12 @@ export type Product = {
     diagonal: number;
     internalStorage: number;
 };
+
+export type Customer = {
+    email: string;
+    phoneNum: string;
+    secondName: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+};
