@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-, "build/product.js", "build/filter_sort_search.types.js"  ]
+, "build/product.js", "build/filter_sort_search.types.js", "public/main.tsx", "vite.config.ts"  ]
 }
