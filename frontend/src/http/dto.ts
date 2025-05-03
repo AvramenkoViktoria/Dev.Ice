@@ -68,3 +68,21 @@ export type Customer = {
     lastName: string;
     password: string;
 };
+
+export type Sale = {
+    saleId: number;
+    name: string;
+    discountValue: number;
+};
+
+export type Manager = {
+    managerId: number;
+    secondName: string;
+    firstName: string;
+    lastName: string;
+    startDate: string;
+    finishDate: string | null;
+    phoneNum: string;
+    email: string;
+    password: string;
+};

@@ -25,7 +25,7 @@ export async function getAllProducts(): Promise<Product[]> {
  * @param searchPayload The search parameters including filter, search, and sort options.
  * @returns A promise that resolves to an array of matching products, or null if the request fails.
  */
-const searchProducts = async (
+export const searchProducts = async (
     searchPayload: SearchPayload,
 ): Promise<any[] | null> => {
     const url = 'http://localhost:8080/api/products/search';
@@ -50,6 +50,29 @@ const searchProducts = async (
         return null;
     }
 };
+
+const testSearchProducts = async () => {
+    const testPayload: SearchPayload = {
+        filter: {
+            sale_id: [1, 2, 3, 4, 5],
+            selling_price: {from: 100, to: 500000},
+        },
+        sort: {
+            product_id: 'ASC',
+        },
+    };
+
+    const result = await searchProducts(testPayload);
+
+    if (result && Array.isArray(result)) {
+        console.log('✅ Test passed: Received array of results');
+        console.log(result);
+    } else {
+        console.log('❌ Test failed: Result is not an array or is null');
+    }
+};
+
+testSearchProducts();
 
 /**
  * Sends a request to add a new product.

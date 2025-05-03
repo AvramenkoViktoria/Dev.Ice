@@ -1,6 +1,5 @@
 package org.naukma.dev_ice.controller;
 
-import org.naukma.dev_ice.dto.ManagerDto;
 import org.naukma.dev_ice.dto.ProductSalesDto;
 import org.naukma.dev_ice.entity.Manager;
 import org.naukma.dev_ice.repository.ManagerRepository;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -27,23 +25,16 @@ public class ManagerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addManager(@RequestBody ManagerDto dto) {
-        Manager manager = new Manager();
-        manager.setSecondName(dto.getSecondName());
-        manager.setFirstName(dto.getFirstName());
-        manager.setLastName(dto.getLastName());
-        manager.setPhoneNum(dto.getPhoneNum());
-        manager.setEmail(dto.getEmail());
-        manager.setPassword(dto.getPassword());
+    public ResponseEntity<String> addManager(@RequestBody Manager manager) {
         try {
-            manager.setStartDate(Timestamp.from(Instant.parse(dto.getStartDate())));
-            if (dto.getFinishDate() != null)
-                manager.setFinishDate(Timestamp.from(Instant.parse(dto.getFinishDate())));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Invalid date format");
-        }
-        try {
+            try {
+                manager.setStartDate(Timestamp.from(Instant.parse(manager.getStartDate().toString())));
+                if (manager.getFinishDate() != null)
+                    manager.setFinishDate(Timestamp.from(Instant.parse(manager.getFinishDate().toString())));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.badRequest().body("Invalid date format");
+            }
             managerRepository.save(manager);
             return ResponseEntity.ok("Manager saved");
         } catch (Exception e) {
@@ -52,34 +43,25 @@ public class ManagerController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateManager(@RequestBody ManagerDto managerDto) {
+    public ResponseEntity<String> updateManager(@RequestBody Manager manager) {
         try {
-            Manager manager = new Manager();
-            manager.setManagerId(managerDto.getManagerId());
-            manager.setSecondName(managerDto.getSecondName());
-            manager.setFirstName(managerDto.getFirstName());
-            manager.setLastName(managerDto.getLastName());
             try {
-                manager.setStartDate(Timestamp.from(Instant.parse(managerDto.getStartDate())));
+                manager.setStartDate(Timestamp.from(Instant.parse(manager.getStartDate().toString())));
             } catch (Exception e) {
                 return ResponseEntity.badRequest().body("Invalid startDate format");
             }
-            if (managerDto.getFinishDate() != null && !managerDto.getFinishDate().isEmpty()) {
+            if (manager.getFinishDate() != null && !manager.getFinishDate().toString().isEmpty()) {
                 try {
-                    manager.setFinishDate(Timestamp.from(Instant.parse(managerDto.getFinishDate())));
+                    manager.setFinishDate(Timestamp.from(Instant.parse(manager.getFinishDate().toString())));
                 } catch (Exception e) {
                     manager.setFinishDate(null);
                 }
             }
 
-            manager.setPhoneNum(managerDto.getPhoneNum());
-            manager.setEmail(managerDto.getEmail());
-            manager.setPassword(managerDto.getPassword());
             managerRepository.update(manager);
-
             return ResponseEntity.ok("Manager updated successfully");
         } catch (RuntimeException e) {
-            return ResponseEntity.internalServerError().body("Failed to save manager: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Failed to update manager: " + e.getMessage());
         }
     }
 

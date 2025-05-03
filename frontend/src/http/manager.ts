@@ -1,3 +1,5 @@
+import {Manager} from './dto';
+
 const BASE_URL = 'http://localhost:8080/api/managers';
 
 /**
@@ -5,7 +7,7 @@ const BASE_URL = 'http://localhost:8080/api/managers';
  * @param manager The manager data to be added.
  * @returns A promise resolving to the response message or throws an error on failure.
  */
-export async function addManager(manager: any): Promise<string> {
+export async function addManager(manager: Manager): Promise<string> {
     try {
         const response = await fetch(`${BASE_URL}/add`, {
             method: 'POST',
@@ -38,7 +40,7 @@ export async function addManager(manager: any): Promise<string> {
  * @param manager The updated manager data.
  * @returns A promise resolving to the response message or throws an error on failure.
  */
-export async function updateManager(manager: any): Promise<string> {
+export async function updateManager(manager: Manager): Promise<string> {
     try {
         const response = await fetch(`${BASE_URL}/update`, {
             method: 'PUT',
@@ -86,7 +88,7 @@ export async function deleteManager(id: number): Promise<string> {
  * Sends a request to retrieve all managers.
  * @returns A promise resolving to a list of all managers, or throws an error on failure.
  */
-export async function getAllManagers(): Promise<any[]> {
+export async function getAllManagers(): Promise<Manager[]> {
     try {
         const response = await fetch(BASE_URL);
         if (!response.ok) throw new Error(response.statusText);
