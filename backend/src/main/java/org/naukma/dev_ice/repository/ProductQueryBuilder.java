@@ -5,20 +5,23 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Component
-public class OrderQueryBuilder {
+public class ProductQueryBuilder {
 
     private final DataSource dataSource;
 
-    public OrderQueryBuilder(DataSource dataSource) {
+    public ProductQueryBuilder(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     public QueryWithParams buildQuery(JSONObject queryParams) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM orders o");
+        StringBuilder sql = new StringBuilder("SELECT * FROM product p");
         List<String> conditions = new ArrayList<>();
         Map<String, Object> params = new LinkedHashMap<>();
         int paramIndex = 0;
@@ -50,22 +53,22 @@ public class OrderQueryBuilder {
                 if (valuesArray == null)
                     valuesArray = new JSONArray().put(filter.get(key));
 
-                if (key.equals("manager_id")) {
-                    List<Integer> allManagerIds = getAllManagerIds();
+                if (key.equals("sale_id")) {
+                    List<Integer> allSaleIds = getAllSaleIds();
                     List<Integer> providedIds = new ArrayList<>();
                     for (int i = 0; i < valuesArray.length(); i++) {
                         providedIds.add(valuesArray.getInt(i));
                     }
 
-                    Collections.sort(allManagerIds);
+                    Collections.sort(allSaleIds);
                     Collections.sort(providedIds);
 
-                    if (allManagerIds.equals(providedIds)) {
+                    if (allSaleIds.equals(providedIds)) {
                         conditions.add("NOT EXISTS (" +
-                                       "SELECT 1 FROM orders o2 " +
-                                       "WHERE o2.order_id = o.order_id AND NOT EXISTS (" +
-                                       "SELECT 1 FROM orders o3 " +
-                                       "WHERE o3.order_id = o2.order_id AND o3.manager_id IS NOT NULL" +
+                                       "SELECT 1 FROM products p2 " +
+                                       "WHERE p2.product_id = p.product_id AND NOT EXISTS (" +
+                                       "SELECT 1 FROM products p3 " +
+                                       "WHERE p3.product_id = p2.product_id AND p3.sale_id IS NOT NULL" +
                                        "))");
                         continue;
                     }
@@ -123,34 +126,40 @@ public class OrderQueryBuilder {
         return new QueryWithParams(sql.toString(), params);
     }
 
-    private List<Integer> getAllManagerIds() {
+    private List<Integer> getAllSaleIds() {
         List<Integer> ids = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT manager_id FROM manager");
+             PreparedStatement stmt = conn.prepareStatement("SELECT sale_id FROM sale");
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                ids.add(rs.getInt("manager_id"));
+                ids.add(rs.getInt("sale_id"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch manager IDs", e);
+            throw new RuntimeException("Failed to fetch sale IDs", e);
         }
         return ids;
     }
 
     private String mapFieldToColumn(String key) {
         return switch (key) {
-            case "order_id" -> "o.order_id";
-            case "manager_id" -> "o.manager_id";
-            case "customer_email" -> "o.customer_email";
-            case "status" -> "o.status";
-            case "placement_date" -> "o.placement_date";
-            case "dispatch_date" -> "o.dispatch_date";
-            case "payment_method" -> "o.payment_method";
-            case "payed" -> "o.payed";
-            case "post" -> "o.post";
-            case "post_office" -> "o.post_office";
-            case "order_amount" -> "o.order_amount";
+            case "product_id" -> "p.product_id";
+            case "sale_id" -> "p.sale_id";
+            case "name" -> "p.name";
+            case "selling_price" -> "p.selling_price";
+            case "purchase_price" -> "p.purchase_price";
+            case "category" -> "p.category";
+            case "in_stock" -> "p.in_stock";
+            case "storage_quantity" -> "p.storage_quantity";
+            case "producer" -> "p.producer";
+            case "brand" -> "p.brand";
+            case "ram" -> "p.ram";
+            case "color" -> "p.color";
+            case "country" -> "p.country";
+            case "prod_year" -> "p.prod_year";
+            case "diagonal" -> "p.diagonal";
+            case "internal_storage" -> "p.internal_storage";
             default -> null;
         };
     }
+
 }

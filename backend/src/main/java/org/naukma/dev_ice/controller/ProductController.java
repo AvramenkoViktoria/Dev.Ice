@@ -1,11 +1,14 @@
 package org.naukma.dev_ice.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.naukma.dev_ice.entity.Product;
+import org.naukma.dev_ice.repository.ProductCustomRepository;
 import org.naukma.dev_ice.repository.ProductRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -13,10 +16,17 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository productRepository;
+    private final ProductCustomRepository productCustomRepository;
 
     @GetMapping
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @PostMapping("/search")
+    public List<Map<String, Object>> searchProducts(@RequestBody String json) {
+        JSONObject queryParams = new JSONObject(json);
+        return productCustomRepository.findProducts(queryParams);
     }
 
     @PostMapping

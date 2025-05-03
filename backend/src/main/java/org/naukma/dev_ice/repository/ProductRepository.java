@@ -1,5 +1,6 @@
 package org.naukma.dev_ice.repository;
 
+import org.json.JSONObject;
 import org.naukma.dev_ice.entity.Product;
 import org.naukma.dev_ice.entity.Sale;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ProductRepository {

@@ -1,6 +1,7 @@
 const BASE_URL = 'http://localhost:8080/api/products';
 
 import {Product} from './dto';
+import {SearchPayload} from './filter_sort_search.types';
 
 /**
  * Sends a request to retrieve all products from the backend.
@@ -18,6 +19,37 @@ export async function getAllProducts(): Promise<Product[]> {
         throw error;
     }
 }
+
+/**
+ * Sends a POST request to search for products based on the specified search criteria.
+ * @param searchPayload The search parameters including filter, search, and sort options.
+ * @returns A promise that resolves to an array of matching products, or null if the request fails.
+ */
+const searchProducts = async (
+    searchPayload: SearchPayload,
+): Promise<any[] | null> => {
+    const url = 'http://localhost:8080/api/products/search';
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(searchPayload),
+            redirect: 'manual',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to fetch product search results:', error);
+        return null;
+    }
+};
 
 /**
  * Sends a request to add a new product.
