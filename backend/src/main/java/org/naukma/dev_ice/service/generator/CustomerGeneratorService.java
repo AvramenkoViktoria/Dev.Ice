@@ -7,6 +7,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
@@ -18,6 +23,7 @@ public class CustomerGeneratorService {
     private static final Faker faker = new Faker(new Locale("en"));
     private static final Set<String> usedEmails = new HashSet<>();
     private static final Random random = new Random();
+    private static final String FILE_PATH = Paths.get("src", "main", "resources", "customer_data.txt").toString();
 
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
@@ -45,7 +51,22 @@ public class CustomerGeneratorService {
         String rawPassword = faker.internet().password(8, 16);
         customer.setPassword(passwordEncoder.encode(rawPassword));
 
+        saveCustomerToFile(email, customer.getFirstName(), rawPassword);
+
         return customer;
+    }
+
+    private void saveCustomerToFile(String email, String name, String rawPassword) {
+        try {
+            Path filePath = Paths.get("src", "main", "resources", "customer_data.txt");
+            Files.createDirectories(filePath.getParent());
+
+            try (FileWriter writer = new FileWriter(filePath.toFile(), false)) {
+                writer.write(String.format("Email: %s, Name: %s, Password: %s%n", email, name, rawPassword));
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to write customer data to file: " + e.getMessage());
+        }
     }
 
     private String generatePhoneNumber() {

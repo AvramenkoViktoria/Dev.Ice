@@ -25,16 +25,24 @@ public class CustomUserDetailsService implements org.springframework.security.co
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("Trying to authenticate user: " + username);
+
         Manager manager = managerRepository.findByEmail(username);
-        if (manager != null)
-            return new User(manager.getPhoneNum(), manager.getPassword(),
+        if (manager != null) {
+            System.out.println("Manager found: " + manager.getEmail());
+            System.out.println("Manager password: " + manager.getPassword());
+            return new User(manager.getEmail(), manager.getPassword(),
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_MANAGER")));
+        }
 
         Customer customer = customerRepository.findByEmail(username);
-        if (customer != null)
+        if (customer != null) {
+            System.out.println("Customer found: " + customer.getEmail());
             return new User(customer.getEmail(), customer.getPassword(),
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
+        }
 
         throw new UsernameNotFoundException("User not found with username: " + username);
     }
+
 }
