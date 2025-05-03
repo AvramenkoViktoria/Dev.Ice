@@ -65,9 +65,9 @@ public class ProductQueryBuilder {
 
                     if (allSaleIds.equals(providedIds)) {
                         conditions.add("NOT EXISTS (" +
-                                       "SELECT 1 FROM products p2 " +
+                                       "SELECT 1 FROM product p2 " +
                                        "WHERE p2.product_id = p.product_id AND NOT EXISTS (" +
-                                       "SELECT 1 FROM products p3 " +
+                                       "SELECT 1 FROM product p3 " +
                                        "WHERE p3.product_id = p2.product_id AND p3.sale_id IS NOT NULL" +
                                        "))");
                         continue;
