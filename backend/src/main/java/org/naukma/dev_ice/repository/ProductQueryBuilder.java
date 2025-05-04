@@ -49,21 +49,12 @@ public class ProductQueryBuilder {
                 String column = mapFieldToColumn(key);
                 if (column == null) continue;
 
-                JSONArray valuesArray = filter.optJSONArray(key);
-                if (valuesArray == null)
-                    valuesArray = new JSONArray().put(filter.get(key));
+                if (key.equals("sale")) {
+                    JSONObject saleRange = filter.getJSONObject("sale");
+                    int from = saleRange.getInt("from");
+                    int to = saleRange.getInt("to");
 
-                if (key.equals("sale_id")) {
-                    List<Integer> allSaleIds = getAllSaleIds();
-                    List<Integer> providedIds = new ArrayList<>();
-                    for (int i = 0; i < valuesArray.length(); i++) {
-                        providedIds.add(valuesArray.getInt(i));
-                    }
-
-                    Collections.sort(allSaleIds);
-                    Collections.sort(providedIds);
-
-                    if (allSaleIds.equals(providedIds)) {
+                    if (from == 1 && to == 99) {
                         conditions.add("NOT EXISTS (" +
                                        "SELECT 1 FROM product p2 " +
                                        "WHERE p2.product_id = p.product_id AND NOT EXISTS (" +
@@ -72,9 +63,17 @@ public class ProductQueryBuilder {
                                        "))");
                         continue;
                     }
+
+                    conditions.add("EXISTS (" +
+                                   "SELECT 1 FROM product p2 " +
+                                   "JOIN sale s ON p2.sale_id = s.sale_id " +
+                                   "WHERE p2.product_id = p.product_id AND s.discount_value BETWEEN " + from + " AND " + to +
+                                   ")");
+                    continue;
                 }
 
-                if (filter.get(key) instanceof JSONObject rangeObj) {
+                Object filterValue = filter.get(key);
+                if (filterValue instanceof JSONObject rangeObj) {
                     String fromParam = key + "_from" + paramIndex++;
                     String toParam = key + "_to" + paramIndex++;
 
@@ -88,6 +87,10 @@ public class ProductQueryBuilder {
                     }
                     continue;
                 }
+
+                JSONArray valuesArray = filter.optJSONArray(key);
+                if (valuesArray == null)
+                    valuesArray = new JSONArray().put(filterValue);
 
                 List<String> subConditions = new ArrayList<>();
                 for (int i = 0; i < valuesArray.length(); i++) {
@@ -143,7 +146,7 @@ public class ProductQueryBuilder {
     private String mapFieldToColumn(String key) {
         return switch (key) {
             case "product_id" -> "p.product_id";
-            case "sale_id" -> "p.sale_id";
+            case "sale" -> "sale";
             case "name" -> "p.name";
             case "selling_price" -> "p.selling_price";
             case "purchase_price" -> "p.purchase_price";

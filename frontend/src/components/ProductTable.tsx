@@ -27,6 +27,12 @@ export interface ProductTableRef {
     refreshProducts: () => void;
     applySearchPayload: (payload: SearchPayload) => void;
     getLastQuery: () => SearchPayload;
+    getCartProducts: () => {
+        product_id: number;
+        name: string;
+        selling_price: number;
+        quantity: number;
+    }[];
 }
 
 const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
@@ -108,6 +114,16 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
             fetchProducts(payload.search, payload.filter, payload.sort);
         },
         getLastQuery: () => lastQuery,
+
+        getCartProducts: () =>
+            products
+                .filter((p) => p.inCart)
+                .map((p) => ({
+                    product_id: p.product_id,
+                    name: p.name,
+                    selling_price: p.selling_price,
+                    quantity: 1,
+                })),
     }));
 
     useEffect(() => {

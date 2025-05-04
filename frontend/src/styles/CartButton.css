@@ -1,0 +1,25 @@
+.cart-button {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    background: linear-gradient(90deg, #6a3fd1, #c2a6fc, #905ef7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart-button:hover {
+    background-color: #3d2f6b;
+    transform: scale(1.1);
+}
+
+.cart-button:focus {
+    outline: none;
+}

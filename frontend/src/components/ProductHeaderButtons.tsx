@@ -13,12 +13,18 @@ interface ProductHeaderButtonsProps {
     resetSorting: () => void;
 }
 
+export function getCookie(name: string): string | null {
+    const match = document.cookie.match(
+        new RegExp('(^| )' + name + '=([^;]+)'),
+    );
+    return match ? decodeURIComponent(match[2]) : null;
+}
+
 const ProductHeaderButtons: React.FC<ProductHeaderButtonsProps> = ({
     fetchProducts,
     resetSorting,
 }) => {
     const navigate = useNavigate();
-    const email = 'example@email.com';
 
     const handleResetFilters = () => {
         window.location.reload();
@@ -37,13 +43,6 @@ const ProductHeaderButtons: React.FC<ProductHeaderButtonsProps> = ({
 
         navigate('/');
     };
-
-    function getCookie(name: string): string | null {
-        const match = document.cookie.match(
-            new RegExp('(^| )' + name + '=([^;]+)'),
-        );
-        return match ? decodeURIComponent(match[2]) : null;
-    }
 
     const handleDeleteAccount = async () => {
         const email = Cookies.get('userEmail');

@@ -37,7 +37,7 @@ const searchOrders = async (
  * @param orderRequest Order data to be created.
  * @returns The created order object, or throws an error on failure.
  */
-async function addOrder(orderRequest: OrderRequestDto): Promise<any> {
+export async function addOrder(orderRequest: OrderRequestDto): Promise<any> {
     const url = 'http://localhost:8080/api/orders/add';
 
     try {
@@ -47,6 +47,7 @@ async function addOrder(orderRequest: OrderRequestDto): Promise<any> {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(orderRequest),
+            credentials: 'include',
         });
 
         const text = await response.text();
