@@ -1,5 +1,7 @@
 import React from 'react';
+import Cookies from 'js-cookie';
 import {useNavigate} from 'react-router-dom';
+import {deleteCustomer} from '../http/customer';
 import '../styles/ProductHeaderButtons.css';
 
 interface ProductHeaderButtonsProps {
@@ -16,6 +18,7 @@ const ProductHeaderButtons: React.FC<ProductHeaderButtonsProps> = ({
     resetSorting,
 }) => {
     const navigate = useNavigate();
+    const email = 'example@email.com';
 
     const handleResetFilters = () => {
         window.location.reload();
@@ -42,6 +45,28 @@ const ProductHeaderButtons: React.FC<ProductHeaderButtonsProps> = ({
         return match ? decodeURIComponent(match[2]) : null;
     }
 
+    const handleDeleteAccount = async () => {
+        const email = Cookies.get('userEmail');
+        if (!email) {
+            alert('Неможливо знайти ваш імейл. Будь ласка, спробуйте знову.');
+            return;
+        }
+
+        const confirmed = window.confirm(
+            'Ви впевнені, що хочете видалити акаунт?',
+        );
+        if (!confirmed) return;
+
+        await handleLogout();
+
+        const success = await deleteCustomer(email);
+        if (success) {
+            alert('Ваш акаунт було видалено.');
+        } else {
+            alert('Помилка при видаленні акаунта.');
+        }
+    };
+
     return (
         <div className='header-buttons'>
             <div className='left-actions'>
@@ -55,8 +80,7 @@ const ProductHeaderButtons: React.FC<ProductHeaderButtonsProps> = ({
             </div>
 
             <div className='search-bar'>
-                <input type='text' placeholder='Пошук...' />
-                <button>🔍</button>
+                <button onClick={handleDeleteAccount}>Видалити акаунт</button>
             </div>
         </div>
     );

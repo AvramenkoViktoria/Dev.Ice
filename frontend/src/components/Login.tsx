@@ -1,6 +1,7 @@
-import {useState, ChangeEvent, FormEvent} from 'react';
+import {useState, FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {login, fetchUser} from '../http/auth';
+import Cookies from 'js-cookie';
 
 interface LoginProps {
     setIsAuthenticated: (auth: boolean) => void;
@@ -14,9 +15,9 @@ const Login: React.FC<LoginProps> = ({
     setLoading,
 }) => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@.]{2,}(?:\.[^\s@.]{2,})*$/;
@@ -45,6 +46,7 @@ const Login: React.FC<LoginProps> = ({
             if (result === 'Login successful!') {
                 const user = await fetchUser();
                 if (user) {
+                    Cookies.set('userEmail', email, {expires: 7});
                     setIsAuthenticated(true);
                     setIsAdmin(user.roles.includes('ROLE_MANAGER'));
                     navigate('/home');

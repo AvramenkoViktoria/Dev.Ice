@@ -2,6 +2,7 @@ import {useState, ChangeEvent, FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {registerAndLogin, fetchUser} from '../http/auth';
 import {Customer} from '../http/dto';
+import Cookies from 'js-cookie';
 
 interface RegisterProps {
     setIsAuthenticated: (auth: boolean) => void;
@@ -24,7 +25,7 @@ const Register: React.FC<RegisterProps> = ({
         password: '',
     });
 
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string>('');
 
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@.]{2,}(?:\.[^\s@.]{2,})*$/;
@@ -71,6 +72,7 @@ const Register: React.FC<RegisterProps> = ({
                 setLoading(true);
                 const user = await fetchUser();
                 if (user) {
+                    Cookies.set('userEmail', email, {expires: 7});
                     setIsAuthenticated(true);
                     setIsAdmin(user.roles.includes('ROLE_MANAGER'));
                     navigate('/home');
