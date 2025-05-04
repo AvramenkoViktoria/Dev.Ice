@@ -4,7 +4,7 @@ type SingleKeyObject<T> = {
     } & Partial<Record<Exclude<keyof T, K>, never>>;
 }[keyof T];
 
-type FilterValue =
+export type FilterValue =
     | string
     | number
     | boolean

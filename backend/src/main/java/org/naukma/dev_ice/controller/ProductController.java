@@ -26,6 +26,7 @@ public class ProductController {
     @PostMapping("/search")
     public List<Map<String, Object>> searchProducts(@RequestBody String json) {
         JSONObject queryParams = new JSONObject(json);
+        System.out.println(json);
         return productCustomRepository.findProducts(queryParams);
     }
 

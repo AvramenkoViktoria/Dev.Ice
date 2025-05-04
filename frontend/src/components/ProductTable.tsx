@@ -1,4 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState,
+    forwardRef,
+    useImperativeHandle,
+} from 'react';
 import '../styles/ProductTable.css';
 import {searchProducts} from '../http/product';
 import {SearchPayload} from '../http/filter_sort_search.types';
@@ -16,7 +22,11 @@ interface Product {
     inCart: boolean;
 }
 
-const ProductTable: React.FC = () => {
+export interface ProductTableRef {
+    applyFilter: (filter: SearchPayload['filter']) => void;
+}
+
+const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [searchInputs, setSearchInputs] = useState<Record<string, string>>(
         {},
@@ -31,10 +41,17 @@ const ProductTable: React.FC = () => {
         top: number;
         left: number;
     } | null>(null);
+    const [filter, setFilter] = useState<SearchPayload['filter']>({});
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const fetchProducts = async (search: SearchPayload['search'] = {}) => {
-        const payload: SearchPayload = {search};
+    const fetchProducts = async (
+        search: SearchPayload['search'] = {},
+        customFilter: SearchPayload['filter'] = filter,
+    ) => {
+        const payload: SearchPayload = {
+            search,
+            filter: customFilter,
+        };
         const result = await searchProducts(payload);
         if (result) {
             const mapped = result.map(
@@ -54,6 +71,13 @@ const ProductTable: React.FC = () => {
             setProducts(mapped);
         }
     };
+
+    useImperativeHandle(ref, () => ({
+        applyFilter: (newFilter) => {
+            setFilter(newFilter);
+            fetchProducts(searchInputs, newFilter);
+        },
+    }));
 
     useEffect(() => {
         fetchProducts();
@@ -103,7 +127,6 @@ const ProductTable: React.FC = () => {
     };
 
     const handleDropdownSelect = (columnKey: string, value: string) => {
-        console.log(value);
         const parsedValue = parseSearchValue(value);
         const search: SearchPayload['search'] = {[columnKey]: parsedValue};
         fetchProducts(search);
@@ -123,7 +146,6 @@ const ProductTable: React.FC = () => {
 
     const renderHeaderCell = (label: string, columnKey: string) => {
         const isDropdown = columnKey === 'category' || columnKey === 'in_stock';
-
         return (
             <th key={columnKey} style={{position: 'relative'}}>
                 {label}{' '}
@@ -245,6 +267,6 @@ const ProductTable: React.FC = () => {
             )}
         </div>
     );
-};
+});
 
 export default ProductTable;
