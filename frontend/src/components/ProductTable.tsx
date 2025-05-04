@@ -24,6 +24,9 @@ interface Product {
 
 export interface ProductTableRef {
     applyFilter: (filter: SearchPayload['filter']) => void;
+    refreshProducts: () => void;
+    applySearchPayload: (payload: SearchPayload) => void;
+    getLastQuery: () => SearchPayload;
 }
 
 const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
@@ -44,14 +47,25 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
     const [filter, setFilter] = useState<SearchPayload['filter']>({});
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    const [lastQuery, setLastQuery] = useState<SearchPayload>({
+        search: {},
+        filter: {},
+        sort: {},
+    });
+
     const fetchProducts = async (
         search: SearchPayload['search'] = {},
-        customFilter: SearchPayload['filter'] = filter,
+        customFilter: SearchPayload['filter'] = {},
+        sort: {[key: string]: 'ASC' | 'DESC'} = {},
     ) => {
         const payload: SearchPayload = {
             search,
             filter: customFilter,
+            sort,
         };
+
+        setLastQuery(payload);
+
         const result = await searchProducts(payload);
         if (result) {
             const mapped = result.map(
@@ -74,9 +88,26 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
 
     useImperativeHandle(ref, () => ({
         applyFilter: (newFilter) => {
+            const newPayload = {
+                ...lastQuery,
+                filter: newFilter,
+            };
             setFilter(newFilter);
-            fetchProducts(searchInputs, newFilter);
+            setLastQuery(newPayload);
+            fetchProducts(
+                newPayload.search,
+                newPayload.filter,
+                newPayload.sort,
+            );
         },
+        refreshProducts: () => {
+            fetchProducts(lastQuery.search, lastQuery.filter, lastQuery.sort);
+        },
+        applySearchPayload: (payload: SearchPayload) => {
+            setLastQuery(payload);
+            fetchProducts(payload.search, payload.filter, payload.sort);
+        },
+        getLastQuery: () => lastQuery,
     }));
 
     useEffect(() => {
@@ -119,7 +150,7 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
                     },
                     {} as Record<string, string | number | boolean>,
                 );
-                fetchProducts(cleanedInputs);
+                fetchProducts(cleanedInputs, filter, lastQuery.sort);
             }
 
             return updated;
@@ -129,7 +160,7 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
     const handleDropdownSelect = (columnKey: string, value: string) => {
         const parsedValue = parseSearchValue(value);
         const search: SearchPayload['search'] = {[columnKey]: parsedValue};
-        fetchProducts(search);
+        fetchProducts(search, filter, lastQuery.sort);
         setActiveDropdownKey(null);
     };
 

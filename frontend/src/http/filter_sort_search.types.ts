@@ -11,6 +11,8 @@ export type FilterValue =
     | (string | number | boolean)[]
     | {from?: string | number; to?: string | number};
 
+type SortOrder = 'ASC' | 'DESC';
+
 export type SearchPayload = {
     filter?: {
         [key: string]: FilterValue;
@@ -18,7 +20,7 @@ export type SearchPayload = {
     search?: {
         [key: string]: string | number | boolean;
     };
-    sort?: SingleKeyObject<{
-        [key: string]: 'ASC' | 'DESC';
-    }>;
+    sort?: {
+        [key: string]: SortOrder;
+    };
 };

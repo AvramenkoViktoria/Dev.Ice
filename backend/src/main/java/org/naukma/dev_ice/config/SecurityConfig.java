@@ -39,7 +39,7 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/login", "/api/auth/me", "/api/customers/**").permitAll()
+                        .requestMatchers("/login", "/api/auth/me", "/api/customers/**").permitAll()
                         .requestMatchers("/home").authenticated()
                         .requestMatchers("/api/managers/**", "/api/orders/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
@@ -54,6 +54,13 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("Authentication failed");
                         })
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
                 )
                 .exceptionHandling(eh -> eh
                         .authenticationEntryPoint((request, response, authException) -> {
