@@ -15,9 +15,9 @@ export type SearchPayload = {
     filter?: {
         [key: string]: FilterValue;
     };
-    search?: SingleKeyObject<{
+    search?: {
         [key: string]: string | number | boolean;
-    }>;
+    };
     sort?: SingleKeyObject<{
         [key: string]: 'ASC' | 'DESC';
     }>;

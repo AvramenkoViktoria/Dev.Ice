@@ -1,0 +1,37 @@
+.home-container {
+    padding: 0 px;
+    overflow-x: hidden;
+    margin: 20px;
+    font-family: sans-serif;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.main-content {
+    display: flex;
+}
+
+.filter-sidebar {
+    width: 220px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    margin-right: 20px;
+}
+
+.product-table table {
+    margin: 0px;
+}
+
+.product-table th,
+.product-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.load-more {
+    margin-top: 10px;
+}

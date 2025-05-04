@@ -38,6 +38,7 @@ export const searchProducts = async (
             },
             body: JSON.stringify(searchPayload),
             redirect: 'manual',
+            credentials: 'include',
         });
 
         if (!response.ok) {

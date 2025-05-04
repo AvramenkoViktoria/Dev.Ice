@@ -1,5 +1,18 @@
+import ProductHeaderButtons from './ProductHeaderButtons';
+import ProductFilterSidebar from './ProductFilterSidebar';
+import ProductTable from './ProductTable';
+import '../styles/Home.css';
+
 const Home = () => {
-    return <h2>Home Page</h2>;
+    return (
+        <div className='home-container'>
+            <ProductHeaderButtons />
+            <div className='main-content'>
+                <ProductFilterSidebar />
+                <ProductTable />
+            </div>
+        </div>
+    );
 };
 
 export default Home;

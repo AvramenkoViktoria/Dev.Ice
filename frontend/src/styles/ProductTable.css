@@ -1,0 +1,108 @@
+.product-table-container {
+    margin: 10px;
+    width: 99%;
+    box-sizing: border-box;
+    font-family: 'Josefin Sans', sans-serif;
+    padding: 16px 0;
+    position: relative;
+    overflow: visible;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    width: 99%;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.product-table th,
+.product-table td {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 14px;
+    min-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.product-table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.product-table th {
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #fff;
+}
+
+.product-table tr:hover td {
+    background-color: #f5f0fc;
+}
+
+.product-table button {
+    margin-left: 4px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #6a3fd1;
+    transition: color 0.2s ease;
+}
+
+.product-table button:hover {
+    color: #905ef7;
+}
+
+.load-more {
+    margin-top: 12px;
+    padding: 10px 20px;
+    border: none;
+    background: #905ef7;
+    color: white;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.load-more:hover {
+    background: #6a3fd1;
+}
+
+.product-table .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    width: 140px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-table .dropdown-menu div {
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-option:hover {
+    background-color: #f0f0f0;
+}
