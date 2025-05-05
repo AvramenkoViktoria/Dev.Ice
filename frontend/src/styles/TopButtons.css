@@ -1,0 +1,58 @@
+.header-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #6a3fd1, #c2a6fc, #905ef7);
+    padding: 16px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    font-family: 'Josefin Sans', sans-serif;
+    margin-bottom: 20px;
+}
+
+/* Текст "МЕНЕДЖЕР" зліва */
+.manager-label {
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Група кнопок вирівнюється вправо */
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Стилі кнопок */
+.button-group button {
+    padding: 8px 20px;
+    background-color: #fff;
+    color: #000;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+}
+
+.button-group button:hover {
+    background-color: #f3ecff;
+    color: #905ef7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(144, 94, 247, 0.3);
+}
+
+.button-group button:active {
+    transform: scale(0.97);
+}
+
+.button-group button:disabled {
+    background-color: #eee;
+    color: #aaa;
+    cursor: not-allowed;
+    box-shadow: none;
+}

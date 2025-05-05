@@ -52,29 +52,6 @@ export const searchProducts = async (
     }
 };
 
-const testSearchProducts = async () => {
-    const testPayload: SearchPayload = {
-        filter: {
-            sale_id: [1, 2, 3, 4, 5],
-            selling_price: {from: 100, to: 500000},
-        },
-        sort: {
-            product_id: 'ASC',
-        },
-    };
-
-    const result = await searchProducts(testPayload);
-
-    if (result && Array.isArray(result)) {
-        console.log('✅ Test passed: Received array of results');
-        console.log(result);
-    } else {
-        console.log('❌ Test failed: Result is not an array or is null');
-    }
-};
-
-testSearchProducts();
-
 /**
  * Sends a request to add a new product.
  * @param product Product data to be created.
@@ -142,3 +119,48 @@ export async function deleteProduct(id: number): Promise<String> {
         throw error;
     }
 }
+
+const testSearchProducts = async () => {
+    const testPayload: SearchPayload = {
+        filter: {
+            sale: {from: 1, to: 99},
+            selling_price: {from: 100, to: 500000},
+        },
+        sort: {
+            product_id: 'ASC',
+        },
+    };
+
+    const result = await searchProducts(testPayload);
+
+    if (result && Array.isArray(result)) {
+        console.log('Test passed: Received array of results');
+        console.log(result);
+    } else {
+        console.log('Test failed: Result is not an array or is null');
+    }
+};
+
+// testSearchProducts();
+
+// (async () => {
+//     const testProduct: Product = {
+//         saleId: 1,
+//         name: 'Test Phone',
+//         sellingPrice: 999.99,
+//         purchasePrice: 850.0,
+//         category: 'Smartphone',
+//         inStock: true,
+//         storageQuantity: 10,
+//         producer: 'TestCorp',
+//         brand: 'TestBrand',
+//         discountValue: null,
+//     };
+
+//     try {
+//         await addProduct(testProduct);
+//         console.log('Test passed: Product successfully added.');
+//     } catch (error) {
+//         console.error('Test failed: Could not add product.', error);
+//     }
+// })();

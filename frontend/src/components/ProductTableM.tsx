@@ -16,6 +16,7 @@ interface Product {
     purchase_price: number;
     category: string;
     sale_id: string;
+    discount_value: number;
     in_stock: boolean;
     storage_quantity: number;
     producer: string;
@@ -76,7 +77,7 @@ const ProductTableM = forwardRef<ProductTableRef>((_, ref) => {
         if (result) {
             const mapped: Product[] = result.map((item: any) => ({
                 ...item,
-                sale_id: item.sale_id ?? '',
+                discount_value: item.discount_value ?? 0,
                 inCart: false,
             }));
             setProducts(mapped);
@@ -167,16 +168,19 @@ const ProductTableM = forwardRef<ProductTableRef>((_, ref) => {
 
     const handleSearchToggle = (column: string) => {
         setVisibleSearchFields((prev) => {
-            const updated = {...prev, [column]: !prev[column]};
-            if (prev[column]) {
+            const wasVisible = prev[column];
+            const updated = {...prev, [column]: !wasVisible};
+
+            if (wasVisible) {
                 const search: Record<string, string | number | boolean> = {};
                 for (const key in searchInputs) {
-                    if (searchInputs[key].trim() && updated[key]) {
+                    if (searchInputs[key].trim() && prev[key]) {
                         search[key] = parseValue(searchInputs[key]);
                     }
                 }
                 fetchProducts(search, filter, lastQuery.sort);
             }
+
             return updated;
         });
     };
@@ -230,6 +234,7 @@ const ProductTableM = forwardRef<ProductTableRef>((_, ref) => {
                 const productForUpdate = {
                     productId: oldProduct.product_id,
                     saleId: parseInt(oldProduct.sale_id || '0'),
+                    discountValue: updated[rowIndex].discount_value || 0,
                     name: updated[rowIndex].name,
                     sellingPrice: updated[rowIndex].selling_price,
                     purchasePrice: updated[rowIndex].purchase_price,
@@ -361,7 +366,7 @@ const ProductTableM = forwardRef<ProductTableRef>((_, ref) => {
                             {renderHeader('Ціна продажу', 'selling_price')}
                             {renderHeader('Ціна закупу', 'purchase_price')}
                             {renderHeader('Категорія', 'category')}
-                            {renderHeader('Знижка', 'sale_id')}
+                            {renderHeader('Знижка', 'discount_value')}
                             {renderHeader('В наявності', 'in_stock')}
                             {renderHeader('Постачальник', 'producer')}
                             {renderHeader('Бренд', 'brand')}
@@ -380,7 +385,7 @@ const ProductTableM = forwardRef<ProductTableRef>((_, ref) => {
                                     'purchase_price',
                                 )}
                                 <td>{p.category}</td>
-                                <td>{p.sale_id}</td>
+                                <td>{p.discount_value + '%'}</td>
                                 <td>{p.in_stock ? '✔️' : '✖️'}</td>
                                 {renderEditableCell(p.producer, i, 'producer')}
                                 {renderEditableCell(p.brand, i, 'brand')}

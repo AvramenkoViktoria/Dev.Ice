@@ -41,8 +41,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/api/auth/me", "/api/customers/**").permitAll()
                         .requestMatchers("/home").authenticated()
-                        .requestMatchers("").hasRole("MANAGER")
-                        .anyRequest().authenticated()
+                        .requestMatchers("/admin").hasRole("MANAGER")
+                        .anyRequest().permitAll() //authenticated()
                 )
                 .formLogin(form -> form
                         .loginProcessingUrl("/login")

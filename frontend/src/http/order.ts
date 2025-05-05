@@ -1,4 +1,9 @@
-import {OrderRequestDto, OrderUpdateRequestDto} from './dto';
+import {
+    OrderRequestDto,
+    OrderUpdateRequestDto,
+    Order,
+    OrderProduct,
+} from './dto';
 import {SearchPayload} from './filter_sort_search.types';
 
 /**
@@ -6,7 +11,7 @@ import {SearchPayload} from './filter_sort_search.types';
  * @param searchPayload Payload containing filter, search, and sort parameters.
  * @returns An array of orders or null if the request fails.
  */
-const searchOrders = async (
+export const searchOrders = async (
     searchPayload: SearchPayload,
 ): Promise<any[] | null> => {
     const url = 'http://localhost:8080/api/orders/search';
@@ -18,7 +23,7 @@ const searchOrders = async (
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(searchPayload),
-            redirect: 'manual',
+            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -73,7 +78,7 @@ export async function addOrder(orderRequest: OrderRequestDto): Promise<any> {
  * Sends a request to update an existing order.
  * @param updateRequest Order update data.
  */
-async function updateOrder(
+export async function updateOrder(
     updateRequest: OrderUpdateRequestDto,
 ): Promise<void> {
     const url = 'http://localhost:8080/api/orders/update';
@@ -85,6 +90,7 @@ async function updateOrder(
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(updateRequest),
+            credentials: 'include',
         });
 
         const text = await response.text();
@@ -100,6 +106,40 @@ async function updateOrder(
             console.error('Error while updating order:', error.message);
         } else {
             console.error('Unknown error while updating order:', error);
+        }
+    }
+}
+
+export async function getOrderById(
+    orderId: number,
+): Promise<OrderUpdateRequestDto> {
+    const url = `http://localhost:8080/api/orders/get/${orderId}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            },
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error(`Server responded with ${response.status}: ${text}`);
+            throw new Error('Failed to retrieve order');
+        }
+
+        const order: OrderUpdateRequestDto = await response.json();
+        console.log('Order retrieved successfully:', order);
+        return order;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error while retrieving order:', error.message);
+            throw error;
+        } else {
+            console.error('Unknown error while retrieving order:', error);
+            throw new Error('Unknown error');
         }
     }
 }
@@ -130,3 +170,30 @@ async function deleteOrder(id: number): Promise<void> {
         console.error('Error during order deletion:', error);
     }
 }
+
+const updatedOrder: Order = {
+    orderId: 11,
+    managerId: 2,
+    customerEmail: 'rodschneider@gmail.com',
+    status: 'PROCESSING',
+    placementDate: new Date('2024-12-01').toISOString(),
+    dispatchDate: new Date().toISOString(),
+    paymentMethod: 'CASH',
+    payed: true,
+    post: 'Ukrposhta',
+    postOffice: 'Lviv, Branch 12',
+    orderAmount: 2222.99,
+};
+
+const updatedProducts: OrderProduct[] = [
+    {orderId: 42, productId: 1, number: 1},
+    {orderId: 42, productId: 2, number: 3},
+];
+
+const updateRequest: OrderUpdateRequestDto = {
+    order: updatedOrder,
+    orderProducts: updatedProducts,
+};
+
+// updateOrder(updateRequest);
+// deleteOrder(11);

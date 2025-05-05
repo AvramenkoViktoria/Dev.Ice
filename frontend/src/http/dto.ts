@@ -44,6 +44,7 @@ export type OrderUpdateRequestDto = {
 export type Product = {
     productId?: number;
     saleId: number;
+    discountValue: number | null;
     name: string;
     sellingPrice: number;
     purchasePrice: number;

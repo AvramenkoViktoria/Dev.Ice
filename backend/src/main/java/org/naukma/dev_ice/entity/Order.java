@@ -1,6 +1,7 @@
 package org.naukma.dev_ice.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Order {
     private Long orderId;
@@ -14,6 +15,15 @@ public class Order {
     private String post;
     private String postOffice;
     private Double orderAmount;
+    private List<OrderProduct> orderProducts;
+
+    public List<OrderProduct> getOrderProducts() {
+        return orderProducts;
+    }
+
+    public void setOrderProducts(List<OrderProduct> orderProducts) {
+        this.orderProducts = orderProducts;
+    }
 
     public Long getOrderId() {
         return orderId;

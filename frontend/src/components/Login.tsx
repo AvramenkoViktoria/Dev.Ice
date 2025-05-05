@@ -2,6 +2,7 @@ import {useState, FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {login, fetchUser} from '../http/auth';
 import Cookies from 'js-cookie';
+import '../styles/Login.css';
 
 interface LoginProps {
     setIsAuthenticated: (auth: boolean) => void;
@@ -69,7 +70,7 @@ const Login: React.FC<LoginProps> = ({
     };
 
     return (
-        <div>
+        <div className='login-container'>
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
                 <div>

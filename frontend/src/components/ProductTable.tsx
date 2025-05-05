@@ -14,7 +14,7 @@ interface Product {
     name: string;
     selling_price: number;
     category: string;
-    sale_id: string;
+    discount_value: number;
     in_stock: boolean;
     storage_quantity: number;
     producer: string;
@@ -81,7 +81,7 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
                     name: item.name,
                     selling_price: item.selling_price,
                     category: item.category,
-                    sale_id: item.sale_id ?? '',
+                    discount_value: item.discount_value ?? 0,
                     in_stock: item.in_stock,
                     storage_quantity: item.storage_quantity,
                     producer: item.producer,
@@ -278,7 +278,7 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
                             {renderHeaderCell('Назва', 'name')}
                             {renderHeaderCell('Ціна', 'selling_price')}
                             {renderHeaderCell('Категорія', 'category')}
-                            {renderHeaderCell('Знижка', 'sale_id')}
+                            {renderHeaderCell('Знижка', 'discount_value')}
                             {renderHeaderCell('В наявності', 'in_stock')}
                             {renderHeaderCell('Постачальник', 'producer')}
                             {renderHeaderCell('Бренд', 'brand')}
@@ -292,7 +292,7 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
                                 <td>{p.name}</td>
                                 <td>{p.selling_price}</td>
                                 <td>{p.category}</td>
-                                <td>{p.sale_id}</td>
+                                <td>{p.discount_value + '%'}</td>
                                 <td>{p.in_stock ? '✔️' : '✖️'}</td>
                                 <td>{p.producer}</td>
                                 <td>{p.brand}</td>

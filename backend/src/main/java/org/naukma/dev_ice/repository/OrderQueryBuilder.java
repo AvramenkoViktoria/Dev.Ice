@@ -18,7 +18,27 @@ public class OrderQueryBuilder {
     }
 
     public QueryWithParams buildQuery(JSONObject queryParams) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM orders o");
+        StringBuilder sql = new StringBuilder(
+                "SELECT " +
+                "o.order_id, " +
+                "o.status, " +
+                "o.placement_date, " +
+                "o.order_amount, " +
+                "o.payment_method, " +
+                "o.post, " +
+                "o.payed, " +
+                "o.post_office, " +
+                "o.dispatch_date, " +
+                "c.email AS customer_id, " +
+                "c.phone_num AS customer_phone, " +
+                "c.last_name AS customer_lastName, " +
+                "c.first_name AS customer_firstName, " +
+                "CONCAT(m.last_name, ' ', m.first_name) AS manager " +
+                "FROM orders o " +
+                "LEFT JOIN customer c ON o.customer_email = c.email " +
+                "LEFT JOIN manager m ON o.manager_id = m.manager_id"
+        );
+
         List<String> conditions = new ArrayList<>();
         Map<String, Object> params = new LinkedHashMap<>();
         int paramIndex = 0;

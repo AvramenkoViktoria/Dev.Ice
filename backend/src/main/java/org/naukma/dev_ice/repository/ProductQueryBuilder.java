@@ -21,7 +21,7 @@ public class ProductQueryBuilder {
     }
 
     public QueryWithParams buildQuery(JSONObject queryParams) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM product p");
+        StringBuilder sql = new StringBuilder("SELECT p.*, s.discount_value FROM product p LEFT JOIN sale s ON p.sale_id = s.sale_id");
         List<String> conditions = new ArrayList<>();
         Map<String, Object> params = new LinkedHashMap<>();
         int paramIndex = 0;
@@ -36,7 +36,15 @@ public class ProductQueryBuilder {
                 String paramName = key + paramIndex++;
                 String column = mapFieldToColumn(key);
                 if (column != null) {
-                    conditions.add(column + " = :" + paramName);
+                    if (key.equals("sale")) {
+                        conditions.add("EXISTS (" +
+                                       "SELECT 1 FROM product p2 " +
+                                       "JOIN sale s ON p2.sale_id = s.sale_id " +
+                                       "WHERE p2.product_id = p.product_id AND s.discount_value = :" + paramName +
+                                       ")");
+                    } else {
+                        conditions.add(column + " = :" + paramName);
+                    }
                     params.put(paramName, value);
                 }
             }
@@ -161,6 +169,7 @@ public class ProductQueryBuilder {
             case "prod_year" -> "p.prod_year";
             case "diagonal" -> "p.diagonal";
             case "internal_storage" -> "p.internal_storage";
+            case "discount_value" -> "s.discount_value";
             default -> null;
         };
     }

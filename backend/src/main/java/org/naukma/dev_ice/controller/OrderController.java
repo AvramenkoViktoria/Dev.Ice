@@ -29,6 +29,20 @@ public class OrderController {
         this.plainOrderRepository = plainOrderRepository;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrderById(@PathVariable("id") Long id) {
+        try {
+            Order order = plainOrderRepository.getById(id);
+            if (order == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+            }
+            return ResponseEntity.ok(order);
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to retrieve order: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/search")
     public List<Map<String, Object>> searchOrders(@RequestBody String json) {
         JSONObject queryParams = new JSONObject(json);

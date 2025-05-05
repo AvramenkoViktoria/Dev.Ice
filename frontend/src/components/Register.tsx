@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {registerAndLogin, fetchUser} from '../http/auth';
 import {Customer} from '../http/dto';
 import Cookies from 'js-cookie';
+import '../styles/Register.css';
 
 interface RegisterProps {
     setIsAuthenticated: (auth: boolean) => void;
@@ -91,7 +92,7 @@ const Register: React.FC<RegisterProps> = ({
     };
 
     return (
-        <div>
+        <div className='register-container'>
             <h2>Register</h2>
             <form onSubmit={handleSubmit}>
                 <div>

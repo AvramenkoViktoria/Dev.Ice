@@ -195,4 +195,56 @@ public class OrderRepository {
             throw new RuntimeException("Failed to delete order and its products: " + e.getMessage(), e);
         }
     }
+
+    public Order getById(Long orderId) throws SQLException {
+        String orderSql = """
+        SELECT * FROM orders WHERE order_id = ?
+    """;
+        String orderProductsSql = """
+        SELECT * FROM order_product WHERE order_id = ?
+    """;
+
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement orderStmt = connection.prepareStatement(orderSql);
+                PreparedStatement productsStmt = connection.prepareStatement(orderProductsSql)
+        ) {
+            orderStmt.setLong(1, orderId);
+            ResultSet orderRs = orderStmt.executeQuery();
+
+            if (!orderRs.next()) {
+                return null;
+            }
+
+            Order order = new Order();
+            order.setOrderId(orderRs.getLong("order_id"));
+            order.setManagerId(orderRs.getLong("manager_id"));
+            order.setCustomerEmail(orderRs.getString("customer_email"));
+            order.setStatus(orderRs.getString("status"));
+            order.setPlacementDate(orderRs.getTimestamp("placement_date"));
+            order.setDispatchDate(orderRs.getTimestamp("dispatch_date"));
+            order.setPaymentMethod(orderRs.getString("payment_method"));
+            order.setPayed(orderRs.getBoolean("payed"));
+            order.setPost(orderRs.getString("post"));
+            order.setPostOffice(orderRs.getString("post_office"));
+            order.setOrderAmount(orderRs.getDouble("order_amount"));
+
+            productsStmt.setLong(1, orderId);
+            ResultSet productRs = productsStmt.executeQuery();
+
+            List<OrderProduct> products = new java.util.ArrayList<>();
+            while (productRs.next()) {
+                OrderProduct op = new OrderProduct();
+                op.setOrderId(productRs.getLong("order_id"));
+                op.setProductId(productRs.getLong("product_id"));
+                op.setNumber(productRs.getInt("number"));
+                products.add(op);
+            }
+
+            order.setOrderProducts(products);
+
+            return order;
+        }
+    }
+
 }

@@ -1,0 +1,60 @@
+.order-filter-sidebar {
+    width: 220px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    font-size: 14px;
+    font-family: 'Josefin Sans', sans-serif;
+    margin-right: 20px;
+}
+
+.order-filter-sidebar h3 {
+    font-family: 'Josefin Sans', sans-serif;
+    background: linear-gradient(90deg, #6a3fd1, #905ef7, #c2a6fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.order-filter-sidebar label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+}
+
+.order-filter-sidebar input[type='number'],
+.order-filter-sidebar input[type='text'],
+.order-filter-sidebar input[type='date'] {
+    width: 50%;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.order-filter-sidebar input[type='checkbox'] {
+    margin-right: 6px;
+}
+
+.order-filter-sidebar button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #905ef7;
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.order-filter-sidebar button:hover {
+    background-color: #6840b9;
+}
