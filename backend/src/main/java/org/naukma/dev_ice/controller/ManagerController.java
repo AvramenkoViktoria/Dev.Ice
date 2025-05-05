@@ -80,6 +80,36 @@ public class ManagerController {
         return ResponseEntity.ok(managerRepository.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getManagerById(@PathVariable("id") Long id) {
+        try {
+            Manager manager = managerRepository.findById(id);
+            if (manager == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Manager not found with id: " + id);
+            }
+            return ResponseEntity.ok(manager);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getManagerByEmail(@PathVariable("email") String email) {
+        try {
+            Manager manager = managerRepository.findByEmail(email);
+            if (manager == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Manager not found with email: " + email);
+            }
+            return ResponseEntity.ok(manager);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/sales-statistics")
     public ResponseEntity<List<ProductSalesDto>> getManagerProductSales(@RequestBody String jsonInput) {
         try {

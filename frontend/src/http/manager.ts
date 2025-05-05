@@ -72,6 +72,7 @@ export async function deleteManager(id: number): Promise<string> {
     try {
         const response = await fetch(`${BASE_URL}/${id}`, {
             method: 'DELETE',
+            credentials: 'include',
         });
 
         if (!response.ok) throw new Error(response.statusText);
@@ -80,6 +81,49 @@ export async function deleteManager(id: number): Promise<string> {
         return message;
     } catch (error) {
         console.error('Failed to delete manager:', error);
+        throw error;
+    }
+}
+
+export async function getManagerById(id: number): Promise<any> {
+    try {
+        const response = await fetch(`${BASE_URL}/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                credentials: 'include',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || response.statusText);
+        }
+
+        const manager = await response.json();
+        return manager;
+    } catch (error) {
+        console.error('Failed to fetch manager:', error);
+        throw error;
+    }
+}
+
+export async function getManagerByEmail(email: string): Promise<Manager> {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/email/${encodeURIComponent(email)}`,
+            {
+                method: 'GET',
+                credentials: 'include',
+            },
+        );
+
+        if (!response.ok) throw new Error(response.statusText);
+
+        const manager = await response.json();
+        return manager;
+    } catch (error) {
+        console.error('Failed to fetch manager by email:', error);
         throw error;
     }
 }
