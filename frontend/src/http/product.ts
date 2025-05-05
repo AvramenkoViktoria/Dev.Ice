@@ -111,6 +111,7 @@ export async function updateProduct(
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(product),
+            credentials: 'include',
         });
         const result = await response.text();
         if (!response.ok) throw new Error(result);
@@ -126,14 +127,16 @@ export async function updateProduct(
  * @param id The ID of the product to be deleted.
  * @returns A promise that resolves when the product is successfully deleted, or throws an error on failure.
  */
-export async function deleteProduct(id: number): Promise<void> {
+export async function deleteProduct(id: number): Promise<String> {
     try {
         const response = await fetch(`${BASE_URL}/${id}`, {
             method: 'DELETE',
+            credentials: 'include',
         });
         const result = await response.text();
         if (!response.ok) throw new Error(result);
         console.log(`Product with ID ${id} deleted:`, result);
+        return result;
     } catch (error) {
         console.error(`Failed to delete product with ID ${id}:`, error);
         throw error;

@@ -42,12 +42,6 @@ public class ProductGeneratorService {
 
             product.setProducer(generateRandomProducer());
             product.setBrand(product.getProducer());
-            product.setRam(generateRandomRam());
-            product.setColor(generateRandomColor());
-            product.setCountry(generateRandomCountry());
-            product.setProdYear(generateRandomYear());
-            product.setDiagonal(generateRandomDiagonal());
-            product.setInternalStorage(generateRandomInternalStorage());
 
             int count = saleRepository.countAll();
             if (count > 0) {

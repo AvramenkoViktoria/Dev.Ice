@@ -1,6 +1,5 @@
 package org.naukma.dev_ice.repository;
 
-import org.json.JSONObject;
 import org.naukma.dev_ice.entity.Product;
 import org.naukma.dev_ice.entity.Sale;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class ProductRepository {
@@ -42,12 +40,6 @@ public class ProductRepository {
                 product.setStorageQuantity(rs.getInt("storage_quantity"));
                 product.setProducer(rs.getString("producer"));
                 product.setBrand(rs.getString("brand"));
-                product.setRam(rs.getInt("ram"));
-                product.setColor(rs.getString("color"));
-                product.setCountry(rs.getString("country"));
-                product.setProdYear(rs.getDate("prod_year"));
-                product.setDiagonal(rs.getDouble("diagonal"));
-                product.setInternalStorage(rs.getInt("internal_storage"));
 
                 Long saleId = rs.getLong("sale_id");
                 if (!rs.wasNull()) {
@@ -69,8 +61,7 @@ public class ProductRepository {
     public Product findById(Long id) throws SQLException {
         String sql = """
         SELECT product_id, sale_id, name, selling_price, purchase_price,
-               category, in_stock, storage_quantity, producer, brand,
-               ram, color, country, prod_year, diagonal, internal_storage
+               category, in_stock, storage_quantity, producer, brand
         FROM product
         WHERE product_id = ?
     """;
@@ -102,12 +93,6 @@ public class ProductRepository {
                     product.setStorageQuantity(rs.getInt("storage_quantity"));
                     product.setProducer(rs.getString("producer"));
                     product.setBrand(rs.getString("brand"));
-                    product.setRam(rs.getObject("ram") != null ? rs.getInt("ram") : null);
-                    product.setColor(rs.getString("color"));
-                    product.setCountry(rs.getString("country"));
-                    product.setProdYear(rs.getDate("prod_year"));
-                    product.setDiagonal(rs.getObject("diagonal") != null ? rs.getDouble("diagonal") : null);
-                    product.setInternalStorage(rs.getObject("internal_storage") != null ? rs.getInt("internal_storage") : null);
 
                     return product;
                 } else {
@@ -118,7 +103,7 @@ public class ProductRepository {
     }
 
     public void deleteById(Long productId) {
-        String deleteOrderProductQuery = "DELETE FROM order_product WHERE product_id = ?";
+        String checkOrderProductQuery = "SELECT 1 FROM order_product WHERE product_id = ? LIMIT 1";
         String deleteProductQuery = "DELETE FROM product WHERE product_id = ?";
 
         Connection conn = null;
@@ -127,12 +112,12 @@ public class ProductRepository {
             conn = dataSource.getConnection();
             conn.setAutoCommit(false);
 
-            try (PreparedStatement deleteOrderProductStmt = conn.prepareStatement(deleteOrderProductQuery)) {
-                deleteOrderProductStmt.setLong(1, productId);
-                int deletedFromOrderProduct = deleteOrderProductStmt.executeUpdate();
-
-                if (deletedFromOrderProduct == 0) {
-                    System.out.println("No related records found in order_product for product_id: " + productId);
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkOrderProductQuery)) {
+                checkStmt.setLong(1, productId);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        throw new RuntimeException("Cannot delete product with ID " + productId + " because it is referenced in order_product.");
+                    }
                 }
             }
 
@@ -169,8 +154,7 @@ public class ProductRepository {
 
     public void update(Product product) {
         String query = "UPDATE product SET sale_id = ?, name = ?, selling_price = ?, purchase_price = ?, " +
-                       "category = ?, in_stock = ?, storage_quantity = ?, producer = ?, brand = ?, ram = ?, " +
-                       "color = ?, country = ?, prod_year = ?, diagonal = ?, internal_storage = ? " +
+                       "category = ?, in_stock = ?, storage_quantity = ?, producer = ?, brand = ? " +
                        "WHERE product_id = ?";
 
         try (Connection conn = dataSource.getConnection();
@@ -190,13 +174,7 @@ public class ProductRepository {
             ps.setInt(7, product.getStorageQuantity());
             ps.setString(8, product.getProducer());
             ps.setString(9, product.getBrand());
-            ps.setInt(10, product.getRam());
-            ps.setString(11, product.getColor());
-            ps.setString(12, product.getCountry());
-            ps.setDate(13, product.getProdYear());
-            ps.setDouble(14, product.getDiagonal());
-            ps.setInt(15, product.getInternalStorage());
-            ps.setLong(16, product.getProductId());
+            ps.setLong(10, product.getProductId());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
@@ -210,8 +188,8 @@ public class ProductRepository {
 
     public void save(Product product) {
         String query = "INSERT INTO product (sale_id, name, selling_price, purchase_price, category, in_stock, " +
-                       "storage_quantity, producer, brand, ram, color, country, prod_year, diagonal, internal_storage) " +
-                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                       "storage_quantity, producer, brand) " +
+                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -230,12 +208,6 @@ public class ProductRepository {
             ps.setInt(7, product.getStorageQuantity());
             ps.setString(8, product.getProducer());
             ps.setString(9, product.getBrand());
-            ps.setInt(10, product.getRam());
-            ps.setString(11, product.getColor());
-            ps.setString(12, product.getCountry());
-            ps.setDate(13, product.getProdYear());
-            ps.setDouble(14, product.getDiagonal());
-            ps.setInt(15, product.getInternalStorage());
 
             ps.executeUpdate();
 

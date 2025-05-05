@@ -55,7 +55,7 @@ public class ProductController {
     public String deleteProduct(@PathVariable Long id) {
         try {
             productRepository.deleteById(id);
-            return "🗑Product deleted successfully";
+            return "Product deleted successfully";
         } catch (Exception e) {
             return "Failed to delete product: " + e.getMessage();
         }

@@ -52,12 +52,6 @@ export type Product = {
     storageQuantity: number;
     producer: string;
     brand: string;
-    ram: number;
-    color: string;
-    country: string;
-    prodYear: string;
-    diagonal: number;
-    internalStorage: number;
 };
 
 export type Customer = {

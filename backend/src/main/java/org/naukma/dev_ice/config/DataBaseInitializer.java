@@ -33,13 +33,7 @@ public class DataBaseInitializer {
                 "in_stock BOOLEAN NOT NULL, " +
                 "storage_quantity INT NOT NULL, " +
                 "producer VARCHAR(255), " +
-                "brand VARCHAR(100), " +
-                "ram INT, " +
-                "color VARCHAR(50), " +
-                "country VARCHAR(50), " +
-                "prod_year DATE, " +
-                "diagonal DOUBLE PRECISION, " +
-                "internal_storage INT" +
+                "brand VARCHAR(100) " +
                 ");",
 
                 "CREATE TABLE IF NOT EXISTS manager (" +

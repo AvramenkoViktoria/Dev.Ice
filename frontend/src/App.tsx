@@ -9,6 +9,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Admin from './components/Admin';
+import Products from './components/Products';
 import ProtectedRoute from './components/ProtectedRoute';
 import {fetchUser} from './http/auth';
 
@@ -96,6 +97,17 @@ const AppRoutes = () => {
                         loading={loading}
                     >
                         <Admin />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path='/products'
+                element={
+                    <ProtectedRoute
+                        isAuthenticated={isAuthenticated && isAdmin}
+                        loading={loading}
+                    >
+                        <Products />
                     </ProtectedRoute>
                 }
             />
