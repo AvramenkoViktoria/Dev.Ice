@@ -52,6 +52,7 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
     } | null>(null);
     const [filter, setFilter] = useState<SearchPayload['filter']>({});
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('DESC');
 
     const [lastQuery, setLastQuery] = useState<SearchPayload>({
         search: {},
@@ -193,8 +194,13 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
 
     const renderHeaderCell = (label: string, columnKey: string) => {
         const isDropdown = columnKey === 'category' || columnKey === 'in_stock';
+        const isPriceColumn = columnKey === 'selling_price';
+
         return (
-            <th key={columnKey} style={{position: 'relative'}}>
+            <th
+                key={columnKey}
+                style={{position: 'relative', whiteSpace: 'nowrap'}}
+            >
                 {label}{' '}
                 {isDropdown ? (
                     <button
@@ -227,6 +233,30 @@ const ProductTable = forwardRef<ProductTableRef>((_, ref) => {
                             />
                         )}
                     </>
+                )}
+                {isPriceColumn && (
+                    <button
+                        style={{marginLeft: '3px'}}
+                        onClick={() => {
+                            const newDirection: 'ASC' | 'DESC' =
+                                sortDirection === 'ASC' ? 'DESC' : 'ASC';
+                            setSortDirection(newDirection);
+
+                            const updatedSort: {[key: string]: 'ASC' | 'DESC'} =
+                                {
+                                    ...lastQuery.sort,
+                                    selling_price: newDirection,
+                                };
+
+                            fetchProducts(
+                                lastQuery.search,
+                                lastQuery.filter,
+                                updatedSort,
+                            );
+                        }}
+                    >
+                        {sortDirection === 'ASC' ? '↑' : '↓'}
+                    </button>
                 )}
             </th>
         );
